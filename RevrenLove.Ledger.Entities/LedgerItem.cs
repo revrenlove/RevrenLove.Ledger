@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace RevrenLove.Ledger.Entities;
 
@@ -10,6 +11,7 @@ public class LedgerItem
 
     public required Guid FinancialAccountHolderId { get; set; }
 
+    [Precision(10, 2)]
     public required decimal Amount { get; set; }
 
     public string? Memo { get; set; }
