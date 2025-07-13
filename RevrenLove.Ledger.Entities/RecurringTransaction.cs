@@ -1,9 +1,8 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace RevrenLove.Ledger.Entities;
 
-public class LedgerItem
+public class RecurringTransaction
 {
     public required Guid Id { get; set; }
 
@@ -11,19 +10,18 @@ public class LedgerItem
 
     public required Guid FinancialAccountHolderId { get; set; }
 
-    public Guid? RecurringTransactionId { get; set; }
-
     [Precision(10, 2)]
     public required decimal Amount { get; set; }
 
-    public string? Memo { get; set; }
+    public required DateOnly StartDate { get; set; }
 
-    [Timestamp]
-    public DateTime CreatedOn { get; set; }
+    public required Frequency Frequency { get; set; }
+
+    public string Description { get; set; } = default!;
 
     public required FinancialAccount FinancialAccount { get; set; }
 
     public required FinancialAccountHolder FinancialAccountHolder { get; set; }
 
-    public RecurringTransaction? RecurringTransaction { get; set; }
+    public ICollection<LedgerItem> LedgerItems { get; } = new HashSet<LedgerItem>();
 }
