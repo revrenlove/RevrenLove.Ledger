@@ -8,14 +8,10 @@ public static class DiExtensions
     public static IServiceCollection AddDbContext(this IServiceCollection services, string connectionString)
     {
         services
-            .AddDbContext<LedgerDbContext>(options =>
+            .AddDbContext<ILedgerDbContext, LedgerDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
-            })
-            .AddDbContextFactory<LedgerDbContext>(options =>
-            {
-                options.UseSqlServer(connectionString);
-            }, ServiceLifetime.Scoped);
+            });
 
         return services;
     }

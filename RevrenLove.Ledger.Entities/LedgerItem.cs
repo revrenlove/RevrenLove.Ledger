@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RevrenLove.Ledger.Entities;
 
-public class LedgerItem
+public class LedgerItem : IEntity, IActivable
 {
     public required Guid Id { get; set; }
 
@@ -20,6 +20,7 @@ public class LedgerItem
 
     [Timestamp]
     public DateTime CreatedOn { get; set; }
+    public required bool IsActive { get; set; } = true;
 
     public required FinancialAccount FinancialAccount { get; set; }
 

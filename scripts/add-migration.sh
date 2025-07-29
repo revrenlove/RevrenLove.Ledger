@@ -8,12 +8,9 @@ fi
 
 MIGRATION_NAME="$1"
 
-# Resolve the directory of the script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Set paths relative to the script location
-PERSISTENCE_PATH="$SCRIPT_DIR/RevrenLove.Ledger.Persistence"
-STARTUP_PATH="$SCRIPT_DIR/RevrenLove.Ledger.Api"
+WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PERSISTENCE_PATH="$WORKSPACE_ROOT/RevrenLove.Ledger.Persistence"
+STARTUP_PATH="$WORKSPACE_ROOT/RevrenLove.Ledger.Api"
 
 # Add the migration
 dotnet ef migrations add "$MIGRATION_NAME" -p "$PERSISTENCE_PATH" -s "$STARTUP_PATH"

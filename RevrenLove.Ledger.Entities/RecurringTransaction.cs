@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RevrenLove.Ledger.Entities;
 
-public class RecurringTransaction
+public class RecurringTransaction : IEntity, IActivable
 {
     public required Guid Id { get; set; }
 
@@ -18,6 +18,7 @@ public class RecurringTransaction
     public required Frequency Frequency { get; set; }
 
     public string Description { get; set; } = default!;
+    public required bool IsActive { get; set; } = true;
 
     public required FinancialAccount FinancialAccount { get; set; }
 
