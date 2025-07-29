@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Persistence;

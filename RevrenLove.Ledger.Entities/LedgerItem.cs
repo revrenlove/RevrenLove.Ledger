@@ -18,8 +18,12 @@ public class LedgerItem : IEntity, IActivable
 
     public string? Memo { get; set; }
 
-    [Timestamp]
-    public DateTime CreatedOn { get; set; }
+    public required DateOnly Date { get; set; }
+
+    public required bool IsProjection { get; set; } = false;
+
+    public required DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+
     public required bool IsActive { get; set; } = true;
 
     public required FinancialAccount FinancialAccount { get; set; }
