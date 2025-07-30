@@ -17,6 +17,6 @@ internal class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
 
         builder.ConfigureActivableEntities();
 
-        // TODO: configure LedgerItem.cs
+        builder.ApplyConfigurationsFromAssembly(typeof(LedgerDbContext).Assembly);
     }
 }
