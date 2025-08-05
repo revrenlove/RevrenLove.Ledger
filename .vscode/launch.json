@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/RevrenLove.Ledger.Api/bin/Debug/net9.0/RevrenLove.Ledger.Api.dll",
+            "program": "${workspaceFolder}/RevrenLove.Ledger.Api/bin/Debug/net8.0/RevrenLove.Ledger.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/RevrenLove.Ledger.Api",
             "stopAtEntry": false,
