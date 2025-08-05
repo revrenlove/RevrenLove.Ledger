@@ -3,7 +3,7 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Services;
 
-public interface IDataAccessor<T> where T : class, IEntity, new()
+public interface IDataAccessor<T> where T : class, IEntity
 {
     Task<T> AddAsync(T entity, bool isSave = true);
     Task<IEnumerable<T>> AddAsync(IEnumerable<T> entities, bool isSave = true);

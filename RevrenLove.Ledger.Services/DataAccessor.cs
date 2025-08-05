@@ -7,7 +7,7 @@ using RevrenLove.Ledger.Persistence;
 namespace RevrenLove.Ledger.Services;
 
 internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> where
-    T : class, IEntity, new()
+    T : class, IEntity
 {
     public async Task<T?> GetAsync(Guid id) => await dbContext.FindAsync<T>(id);
 
