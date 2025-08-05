@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RevrenLove.Ledger.Persistence\RevrenLove.Ledger.Persistence.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Services\RevrenLove.Ledger.Services.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SqlServer\RevrenLove.Ledger.Persistence.SqlServer.csproj" />
   </ItemGroup>
 
 </Project>

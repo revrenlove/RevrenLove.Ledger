@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence.Configurations;
+namespace RevrenLove.Ledger.Persistence.SqlServer.Configurations;
 
 public class LedgerItemConfiguration : IEntityTypeConfiguration<LedgerItem>
 {

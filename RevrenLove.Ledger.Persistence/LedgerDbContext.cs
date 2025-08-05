@@ -3,7 +3,7 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Persistence;
 
-internal class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
+public class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
     : DbContext(options), ILedgerDbContext
 {
     public DbSet<FinancialAccount> FinancialAccounts { get; set; }
