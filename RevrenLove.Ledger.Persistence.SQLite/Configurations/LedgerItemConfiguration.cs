@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence.SqlServer.Configurations;
+namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
 
 public class LedgerItemConfiguration : IEntityTypeConfiguration<LedgerItem>
 {
@@ -10,7 +10,7 @@ public class LedgerItemConfiguration : IEntityTypeConfiguration<LedgerItem>
     {
         builder
             .Property(l => l.CreatedOn)
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder
            .Property(l => l.IsProjection)

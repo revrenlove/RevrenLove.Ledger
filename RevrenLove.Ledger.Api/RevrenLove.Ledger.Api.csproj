@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>55d6faae-fa8e-4143-b83d-3c392adc0c72</UserSecretsId>
+    <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Services\RevrenLove.Ledger.Services.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SqlServer\RevrenLove.Ledger.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SQLite\RevrenLove.Ledger.Persistence.SQLite.csproj" />
   </ItemGroup>
 
 </Project>

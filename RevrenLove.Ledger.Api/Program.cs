@@ -1,22 +1,18 @@
-
-// TODO: JE - Add an argument to the Program class to allow for different environments (e.g., development, production).
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
-var connectionString = builder.Configuration.GetConnectionString("Default")!;
 
-// TODOL JE - This is where you would add other database providers (e.g., InMemory, PostgreSQL, etc.) based on configuration.
 builder
     .Services
-    .AddSqlServerDbContext(connectionString)
-    .AddLedgerServices();
-
-builder.Services.AddControllers();
+    .AddLedgerDatabase(builder.Configuration, builder.Environment.EnvironmentName)
+    .AddLedgerServices()
+    .AddControllers();
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+// TODO: JE - Add auth
 // app.UseAuthorization();
 
 app.MapControllers();
