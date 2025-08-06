@@ -9,12 +9,17 @@ namespace RevrenLove.Ledger.Services;
 internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> where
     T : class, IEntity
 {
+    public IQueryable<T> Get(Expression<Func<T, bool>> predicate) =>
+        dbContext.Set<T>().Where(predicate);
+
+    public IQueryable<T> Get() => dbContext.Set<T>();
+
     public async Task<T?> GetAsync(Guid id) => await dbContext.FindAsync<T>(id);
 
     public async Task<List<T>> GetAsync(Expression<Func<T, bool>> predicate) =>
-        await dbContext.Set<T>().Where(predicate).ToListAsync();
+        await Get(predicate).ToListAsync();
 
-    public async Task<List<T>> GetAsync() => await dbContext.Set<T>().ToListAsync();
+    public async Task<List<T>> GetAsync() => await Get().ToListAsync();
 
     public async Task<T> AddAsync(T entity, bool isSave = true)
     {
