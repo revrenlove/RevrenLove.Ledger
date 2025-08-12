@@ -4,7 +4,7 @@ namespace RevrenLove.Ledger.Entities;
 
 public class RecurringTransaction : IEntity, IActivable
 {
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; }
 
     public required Guid FinancialAccountId { get; set; }
 

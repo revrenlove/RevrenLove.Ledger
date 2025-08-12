@@ -43,12 +43,13 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
     {
         T existingEntity =
             await GetAsync(entity.Id) ??
+                // TODO: JE - Better exception verbiage
                 throw new InvalidOperationException("Entity not found.");
 
         var entry = dbContext.Entry(existingEntity);
         var updatedEntry = dbContext.Entry(entity);
 
-        var properties = entry.Properties.Where(p => IsUpdatableProperty(p));
+        var properties = entry.Properties.Where(IsUpdatableProperty);
 
         foreach (var property in properties)
         {
@@ -99,4 +100,9 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
 
         return true;
     }
+
+    // TODO: JE - Extension Methods? for IActivable (Activate() and Deactivate())
+
+    // TODO: JE - OOOrrrrrr... Figure out a "Property selector" ish thingy that can set a single value...
+    //          a la... myEntity.Property(e => e.IsActive).Update(false)... or something...
 }
