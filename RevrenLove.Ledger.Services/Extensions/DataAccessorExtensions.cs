@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Services;
+namespace RevrenLove.Ledger.Services.Extensions;
 
 public static class DataAccessorExtensions
 {

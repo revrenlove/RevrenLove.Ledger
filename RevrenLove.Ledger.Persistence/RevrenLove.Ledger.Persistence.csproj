@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Abstractions\RevrenLove.Ledger.Abstractions.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-namespace RevrenLove.Ledger.Services;
+namespace RevrenLove.Ledger.Services.Extensions;
 
 public static class MappingExtensions
 {
