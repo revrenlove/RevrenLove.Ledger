@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Entities;
-using RevrenLove.Ledger.Persistence;
 
 namespace RevrenLove.Ledger.Services;
 
 // TODO: JE - This will all get refactored into the appropriate spot...
-public class CatchAllService(
+internal class CatchAllService(
     IDataAccessor<FinancialAccount> financialAccounts,
     IDataAccessor<FinancialAccountHolder> financialAccountHolders,
     IDataAccessor<LedgerItem> ledgerItems,

@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Entities;
-using RevrenLove.Ledger.Persistence;
 
 namespace RevrenLove.Ledger.Services;
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence;
+namespace RevrenLove.Ledger.Abstractions;
 
 public interface ILedgerDbContext
 {

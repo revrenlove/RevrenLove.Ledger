@@ -2,12 +2,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
-    <ProjectReference Include="..\RevrenLove.Ledger.Abstractions\RevrenLove.Ledger.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.19" />
   </ItemGroup>
 
   <PropertyGroup>

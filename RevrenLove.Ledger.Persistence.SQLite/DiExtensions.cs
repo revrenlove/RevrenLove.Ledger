@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Persistence;
 using RevrenLove.Ledger.Persistence.SQLite.Configurations;
 

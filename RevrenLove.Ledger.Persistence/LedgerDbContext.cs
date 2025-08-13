@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Persistence;

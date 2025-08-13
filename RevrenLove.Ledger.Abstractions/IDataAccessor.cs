@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Services;
+namespace RevrenLove.Ledger.Abstractions;
 
 public interface IDataAccessor<T> where T : class, IEntity
 {

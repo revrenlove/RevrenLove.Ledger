@@ -1,8 +1,9 @@
+using RevrenLove.Ledger.Abstractions;
 using RevrenLove.Ledger.Models;
 
 namespace RevrenLove.Ledger.Services;
 
-public class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccountHolder> financialAccountHolders)
+internal class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccountHolder> financialAccountHolders)
 {
     public async Task<FinancialAccountHolder> AddAsync(string name, string? description = null)
     {
