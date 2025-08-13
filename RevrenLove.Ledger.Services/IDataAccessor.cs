@@ -14,4 +14,5 @@ public interface IDataAccessor<T> where T : class, IEntity
     Task<List<T>> GetAsync();
     Task RemoveAsync(Guid id, bool isSave = true);
     Task<T> UpdateAsync(T entity, bool isSave = true);
+    Task<int> SaveChangesAsync();
 }

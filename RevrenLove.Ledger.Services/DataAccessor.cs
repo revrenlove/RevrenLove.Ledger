@@ -41,10 +41,7 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
 
     public async Task<T> UpdateAsync(T entity, bool isSave = true)
     {
-        T existingEntity =
-            await GetAsync(entity.Id) ??
-                // TODO: JE - Better exception verbiage
-                throw new InvalidOperationException("Entity not found.");
+        T existingEntity = await GetAsync(entity.Id) ?? throw new KeyNotFoundException();
 
         var entry = dbContext.Entry(existingEntity);
         var updatedEntry = dbContext.Entry(entity);
@@ -70,7 +67,7 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
 
     public async Task RemoveAsync(Guid id, bool isSave = true)
     {
-        T entity = await GetAsync(id) ?? throw new InvalidOperationException("Entity not found.");
+        T entity = await GetAsync(id) ?? throw new KeyNotFoundException();
 
         if (entity is IActivable activable)
         {
@@ -84,8 +81,9 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
         await SaveIfNeededAsync(isSave);
     }
 
-    private async Task<int> SaveIfNeededAsync(bool isSave) =>
-        isSave ? await dbContext.SaveChangesAsync() : 0;
+    public async Task<int> SaveChangesAsync() => await dbContext.SaveChangesAsync();
+
+    private async Task<int> SaveIfNeededAsync(bool isSave) => isSave ? await SaveChangesAsync() : 0;
 
     private static bool IsUpdatableProperty(PropertyEntry property)
     {
@@ -100,9 +98,4 @@ internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> wh
 
         return true;
     }
-
-    // TODO: JE - Extension Methods? for IActivable (Activate() and Deactivate())
-
-    // TODO: JE - OOOrrrrrr... Figure out a "Property selector" ish thingy that can set a single value...
-    //          a la... myEntity.Property(e => e.IsActive).Update(false)... or something...
 }
