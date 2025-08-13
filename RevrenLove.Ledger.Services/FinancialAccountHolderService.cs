@@ -15,7 +15,7 @@ public class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccou
 
         await financialAccountHolders.AddAsync(entity);
 
-        var model = FinancialAccountHolder.FromEntity(entity);
+        var model = entity.ToModel();
 
         return model;
     }
@@ -27,7 +27,7 @@ public class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccou
                 financialAccountHolders.GetAsync(id) ??
                     throw new KeyNotFoundException($"No {nameof(FinancialAccountHolder)} found with Id of {id}");
 
-        var model = FinancialAccountHolder.FromEntity(entity);
+        var model = entity.ToModel();
 
         return model;
     }
@@ -38,7 +38,7 @@ public class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccou
 
         entity = await financialAccountHolders.UpdateAsync(entity);
 
-        var model = FinancialAccountHolder.FromEntity(entity);
+        var model = entity.ToModel();
 
         return model;
     }
