@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.19" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RevrenLove.Ledger.Shared\RevrenLove.Ledger.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

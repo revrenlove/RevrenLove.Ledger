@@ -25,6 +25,7 @@ public class LedgerItem : IEntity, IActivable
 
     public required bool IsActive { get; set; } = true;
 
+
     public required FinancialAccount FinancialAccount { get; set; }
 
     public required FinancialAccountHolder FinancialAccountHolder { get; set; }

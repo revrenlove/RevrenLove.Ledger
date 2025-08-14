@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Entities;
 
@@ -18,7 +19,9 @@ public class RecurringTransaction : IEntity, IActivable
     public required Frequency Frequency { get; set; }
 
     public string Description { get; set; } = default!;
+
     public required bool IsActive { get; set; } = true;
+
 
     public required FinancialAccount FinancialAccount { get; set; }
 

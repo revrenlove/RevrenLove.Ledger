@@ -2,5 +2,7 @@ namespace RevrenLove.Ledger.Models;
 
 public class FinancialAccount
 {
-    // TODO: JE - Fill out all of the DTOs
+    public Guid Id { get; set; }
+    public required string Name { get; set; }
+    public string? Description { get; set; }
 }

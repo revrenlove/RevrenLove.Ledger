@@ -1,4 +1,4 @@
-namespace RevrenLove.Ledger.Entities;
+namespace RevrenLove.Ledger.Shared;
 
 public enum Frequency
 {
