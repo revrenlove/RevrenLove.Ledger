@@ -1,4 +1,5 @@
 using RevrenLove.Ledger.Abstractions;
+using RevrenLove.Ledger.Abstractions.Services;
 using RevrenLove.Ledger.Services;
 
 #pragma warning disable IDE0130
@@ -10,7 +11,8 @@ public static class DiExtensions
     public static IServiceCollection AddLedgerServices(this IServiceCollection services)
     {
         services
-            .AddScoped(typeof(IDataAccessor<>), typeof(DataAccessor<>));
+            .AddScoped(typeof(IDataAccessor<>), typeof(DataAccessor<>))
+            .AddScoped<IFinancialAccountHolderService, FinancialAccountHolderService>();
 
         return services;
     }

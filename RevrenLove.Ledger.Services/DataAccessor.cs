@@ -6,6 +6,7 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Services;
 
+// TODO: JE - Move this from the Service project... it doesn't rely on models or any other services...
 internal class DataAccessor<T>(ILedgerDbContext dbContext) : IDataAccessor<T> where
     T : class, IEntity
 {

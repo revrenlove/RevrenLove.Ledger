@@ -1,19 +1,15 @@
 using RevrenLove.Ledger.Abstractions;
+using RevrenLove.Ledger.Abstractions.Services;
 using RevrenLove.Ledger.Models;
 using RevrenLove.Ledger.Services.Extensions;
 
 namespace RevrenLove.Ledger.Services;
 
-internal class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccountHolder> financialAccountHolders)
+internal class FinancialAccountHolderService(IDataAccessor<Entities.FinancialAccountHolder> financialAccountHolders) : IFinancialAccountHolderService
 {
-    public async Task<FinancialAccountHolder> AddAsync(string name, string? description = null)
+    public async Task<FinancialAccountHolder> AddAsync(FinancialAccountHolder financialAccountHolder)
     {
-        var entity = new Entities.FinancialAccountHolder
-        {
-            Name = name,
-            Description = description,
-            IsActive = true,
-        };
+        var entity = financialAccountHolder.ToEntity();
 
         await financialAccountHolders.AddAsync(entity);
 

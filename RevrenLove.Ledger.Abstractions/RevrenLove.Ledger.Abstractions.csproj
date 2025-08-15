@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Models\RevrenLove.Ledger.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
