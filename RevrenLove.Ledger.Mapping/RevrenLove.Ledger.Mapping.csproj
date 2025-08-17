@@ -2,9 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Abstractions\RevrenLove.Ledger.Abstractions.csproj" />
-    <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
-    <ProjectReference Include="..\RevrenLove.Ledger.Models\RevrenLove.Ledger.Models.csproj" />
-    <ProjectReference Include="..\RevrenLove.Ledger.Mapping\RevrenLove.Ledger.Mapping.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
