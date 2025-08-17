@@ -2,7 +2,9 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Abstractions.Services;
 
-public abstract class BaseService<TModel, TEntity>(IDataAccessor<TEntity> dataAccessor, IMapper mapper) where TEntity : class, IEntity
+public abstract class BaseService<TModel, TEntity>(IDataAccessor<TEntity> dataAccessor, IMapper mapper)
+    : IBaseService<TModel, TEntity>
+    where TEntity : class, IEntity
 {
     protected IDataAccessor<TEntity> DataAccessor => dataAccessor;
 

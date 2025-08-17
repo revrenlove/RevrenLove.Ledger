@@ -1,11 +1,6 @@
-using RevrenLove.Ledger.Models;
-
 namespace RevrenLove.Ledger.Abstractions.Services;
 
-// TODO: JE - Create a base service...
-public interface IFinancialAccountHolderService
+public interface IFinancialAccountHolderService : IBaseService<Models.FinancialAccountHolder, Entities.FinancialAccountHolder>
 {
-    Task<FinancialAccountHolder> AddAsync(FinancialAccountHolder financialAccountHolder);
-    Task<FinancialAccountHolder> GetAsync(Guid id);
-    Task<FinancialAccountHolder> UpdateAsync(FinancialAccountHolder financialAccountHolder);
+    // TODO: JE - Add the shit when we add it to the class...
 }
