@@ -1,3 +1,5 @@
+using RevrenLove.Ledger.Api.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
@@ -14,6 +16,8 @@ app.UseHttpsRedirection();
 
 // TODO: JE - Add auth
 // app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 
