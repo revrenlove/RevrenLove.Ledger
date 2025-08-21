@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace RevrenLove.Ledger.Entities;
 
 public class FinancialAccountHolder : IEntity, IActivable

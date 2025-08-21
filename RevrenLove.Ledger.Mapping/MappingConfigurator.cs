@@ -10,6 +10,11 @@ public class MappingConfigurator
     {
         var mappingDefinition = new MappingDefinition<TSource, TDestination>(mappingFunction);
 
+        AddMapping(mappingDefinition);
+    }
+
+    public void AddMapping<TSource, TDestination>(MappingDefinition<TSource, TDestination> mappingDefinition)
+    {
         _mappingDefinitions.Add(mappingDefinition);
     }
 
@@ -18,10 +23,15 @@ public class MappingConfigurator
         Func<TDestination, TSource> reverseMappingFunction)
     {
         AddMapping(mappingFunction);
+        AddMapping(reverseMappingFunction);
+    }
 
-        var mappingDefinition = new MappingDefinition<TDestination, TSource>(reverseMappingFunction);
-
-        _mappingDefinitions.Add(mappingDefinition);
+    public void AddMapping<TSource, TDestination>(
+        MappingDefinition<TSource, TDestination> mappingDefinition,
+        MappingDefinition<TDestination, TSource> reverseMappingDefinition)
+    {
+        AddMapping(mappingDefinition);
+        AddMapping(reverseMappingDefinition);
     }
 
     public IReadOnlyList<IMappingDefinition> GetMappingDefinitions() => _mappingDefinitions;

@@ -32,20 +32,44 @@ public class Mapper : IMapper
 
     private TDestination MapInternal<TSource, TDestination>(TSource source)
     {
+        if (source is null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        var sourceType = typeof(TSource);
+
+        if (sourceType == typeof(object))
+        {
+            sourceType = source.GetType();
+        }
+
         var mappingTypes = new MappingSignature
         {
-            SourceType = typeof(TSource),
+            SourceType = sourceType,
             DestinationType = typeof(TDestination)
         };
 
         if (!_mappingFunctionsByMappingTypes.TryGetValue(mappingTypes, out var del))
         {
-            throw new InvalidOperationException(
-                $"No mapping configured for {typeof(TSource).FullName} to {typeof(TDestination).FullName}"
-            );
+            var msg = $"No mapping configured for {sourceType.FullName} to {typeof(TDestination).FullName}";
+
+            throw new InvalidOperationException(msg);
         }
 
-        var mappingFunction = (Func<TSource, TDestination>)del;
-        return mappingFunction(source);
+        TDestination destination;
+
+        if (typeof(TSource) == typeof(object))
+        {
+            destination = (TDestination)del.DynamicInvoke(source!)!;
+        }
+        else
+        {
+            var mappingFunction = (Func<TSource, TDestination>)del;
+
+            destination = mappingFunction(source);
+        }
+
+        return destination;
     }
 }
