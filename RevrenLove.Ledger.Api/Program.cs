@@ -8,7 +8,18 @@ builder
     .Services
     .AddLedgerDatabase(builder.Configuration, builder.Environment.EnvironmentName)
     .AddLedgerServices()
-    .AddControllers();
+    .AddControllers()
+    .Services
+    .AddCors(options => 
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    });
 
 var app = builder.Build();
 
@@ -16,6 +27,10 @@ app.UseHttpsRedirection();
 
 // TODO: JE - Add auth
 // app.UseAuthorization();
+
+// TODO: JE - This is for DEV shit only!!!!
+// Enable CORS for everything
+app.UseCors();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

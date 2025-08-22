@@ -21,6 +21,15 @@ public abstract class BaseService<TModel, TEntity>(IDataAccessor<TEntity> dataAc
         return model;
     }
 
+    public async Task<IEnumerable<TModel>> GetAsync()
+    {
+        var entities = await DataAccessor.Get().ToListAsync();
+
+        var models = entities.Select(e => mapper.Map<TModel>(e));
+
+        return models;
+    }
+
     public async Task<TModel> GetAsync(Guid id)
     {
         var entity =
