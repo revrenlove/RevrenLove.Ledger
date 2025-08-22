@@ -1,0 +1,14 @@
+@page "/Accounts"
+
+@inject LedgerApiClient apiClient
+
+<h1>Accounts</h1>
+
+@code {
+    private FinancialAccount[]? financialAccounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        financialAccounts = await apiClient.FinancialAccounts.Get();
+    }
+}
