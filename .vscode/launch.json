@@ -30,6 +30,30 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
+        },
+        {
+            "name": "Blazor WebAssembly",
+            "type": "blazorwasm",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/RevrenLove.Ledger.Web/bin/Debug/net8.0/RevrenLove.Ledger.Web.dll",
+            "cwd": "${workspaceFolder}/RevrenLove.Ledger.Web",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch API and Web",
+            "configurations": [
+                ".NET Core Launch (web)",
+                "Blazor WebAssembly"
+            ]
         }
     ]
 }
