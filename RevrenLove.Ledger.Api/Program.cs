@@ -10,7 +10,9 @@ builder
     .AddLedgerServices()
     .AddControllers()
     .Services
-    .AddCors(options => 
+    // TODO: JE - This is for DEV shit only!!!!
+    // Enable CORS for everything
+    .AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
         {
