@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Abstractions.Services;
@@ -25,7 +26,7 @@ public abstract class BaseService<TModel, TEntity>(IDataAccessor<TEntity> dataAc
     {
         var entities = await DataAccessor.Get().ToListAsync();
 
-        var models = entities.Select(e => mapper.Map<TModel>(e));
+        var models = entities.Select(mapper.Map<TModel>);
 
         return models;
     }
