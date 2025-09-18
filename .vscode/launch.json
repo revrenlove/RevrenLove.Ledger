@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch UI",
+            "type": "blazorwasm",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/RevrenLove.Ledger.Web",
+            "program": "${workspaceFolder}/RevrenLove.Ledger.Web/bin/Debug/net9.0/RevrenLove.Ledger.Web.dll",
+            "preLaunchTask": "build-web",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+        },
+        {
+            "name": "Launch Api",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/RevrenLove.Ledger.Api/bin/Debug/net9.0/RevrenLove.Ledger.Api.dll",
+            "preLaunchTask": "build-api",
+            "cwd": "${workspaceFolder}/RevrenLove.Ledger.Api",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Launch Ui and Api",
+            "configurations": [
+                "Launch Api",
+                "Launch UI"
+            ]
+        }
+    ]
+}
