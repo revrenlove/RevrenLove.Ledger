@@ -26,16 +26,12 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/RevrenLove.Ledger.sln",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            "label": "build-all",
+            "dependsOn": [
+                "build-api",
+                "build-web"
             ],
-            "problemMatcher": "$msCompile",
+            "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
                 "isDefault": true

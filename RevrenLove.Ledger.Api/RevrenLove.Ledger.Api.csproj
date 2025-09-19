@@ -8,11 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Models\RevrenLove.Ledger.Api.Models.csproj" />
-    <ProjectReference Include="..\RevrenLove.Ledger.Api.Client\RevrenLove.Ledger.Api.Client.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SQLite\RevrenLove.Ledger.Persistence.SQLite.csproj" />
   </ItemGroup>
 
 </Project>
