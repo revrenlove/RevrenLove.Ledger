@@ -6,10 +6,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DiExtensions
 {
-    public static IServiceCollection AddSimplishAuthClient(this IServiceCollection services, string baseAddress)
+    public static IServiceCollection AddSimplishAuthClient(this IServiceCollection services)
     {
         services
-            .AddScoped<ISimplishAuthClient, SimplishAuthClient>();
+            .AddScoped<ISimplishAuthClient, SimplishAuthClient>()
+            .AddSingleton<ISimplishAuthClientResultFactory, SimplishAuthClientResultFactory>();
 
         return services;
     }

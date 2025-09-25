@@ -5,53 +5,51 @@ namespace RevrenLove.SimplishAuth;
 
 public interface ISimplishAuthClient
 {
-    /// <summary>
-    /// Registers a user with the given credentials.
-    /// </summary>
-    /// <param name="registerRequest"></param>
-    /// <exception cref="ValidationException">Thrown when <paramref name="registerRequest"/> has an invalid email or password.</exception>
-    Task Register(RegisterRequest registerRequest);
+    // POST
+    // 200
+    // 400 - HttpValidationProblemDetails
+    Task<SimplishAuthClientResult> Register(RegisterRequest request);
 
     // POST
     // 200 - AccessTokenResponse
     // 401
-    Task<AccessTokenResponse> Login(LoginRequest loginRequest, bool? useCookies = null, bool? useSessionCookies = null);
+    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false);
 
     // POST
     // 200 - AccessTokenResponse
     // 401
-    Task<AccessTokenResponse> Refresh(RefreshRequest refreshRequest);
+    Task<SimplishAuthClientResult<AccessTokenResponse>> Refresh(RefreshRequest request);
 
     // POST
     // 200
-    Task ResendConfirmationEmail(ResendConfirmationEmailRequest resendConfirmationEmailRequest);
-
-    // POST
-    // 200
-    // 400 - HttpValidationProblemDetails
-    Task ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+    Task<SimplishAuthClientResult> ResendConfirmationEmail(ResendConfirmationEmailRequest request);
 
     // POST
     // 200
     // 400 - HttpValidationProblemDetails
-    Task ResetPassword(ResetPasswordRequest resetPasswordRequest);
+    Task<SimplishAuthClientResult> ForgotPassword(ForgotPasswordRequest request);
+
+    // POST
+    // 200
+    // 400 - HttpValidationProblemDetails
+    Task<SimplishAuthClientResult> ResetPassword(ResetPasswordRequest request);
 
     // POST - Bearer
     // 200 - TwoFactorResponse
     // 400 - HttpValidationProblemDetails
     // 401
     // TODO: JE - This may need to be split up into multiple methods based on what this shit is intended to do...
-    Task<TwoFactorResponse> Manage2Fa(string bearerToken, TwoFactorRequest twoFactorRequest);
+    Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(string bearerToken, TwoFactorRequest request);
 
     // GET - Bearer
     // 200 - InfoResponse
     // 400 - HttpValidationProblemDetails
     // 404
-    Task<InfoResponse> ManageInfo(string bearerToken);
+    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken);
 
     // POST - Bearer
     // 200 - InfoResponse
     // 400 - HttpValidationProblemDetails
     // 404
-    Task<InfoResponse> ManageInfo(string bearerToken, InfoRequest infoRequest);
+    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken, InfoRequest request);
 }

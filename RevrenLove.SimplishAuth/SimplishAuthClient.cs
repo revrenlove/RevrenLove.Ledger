@@ -1,117 +1,132 @@
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using RevrenLove.SimplishAuth.Models.Requests;
 using RevrenLove.SimplishAuth.Models.Responses;
 
 namespace RevrenLove.SimplishAuth;
 
-internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
+internal class SimplishAuthClient(
+    HttpClient httpClient,
+    ISimplishAuthClientResultFactory simplishAuthClientResultFactory)
+    : ISimplishAuthClient
 {
     private readonly HttpClient _httpClient = httpClient;
 
-    // TODO: Document this method... like for the "Request" stripping
-    private async Task<HttpResponseMessage> MakeRequest<T>(T request, Dictionary<string, string>? queryParameters = null)
-        where T : notnull
+    public async Task<SimplishAuthClientResult> Register(RegisterRequest request)
     {
-        var route =
-            request
-                .GetType()
-                .Name
-                .Replace("Request", string.Empty)
-                .ShrinkFirstLetter();
+        var response = await _httpClient.PostAsJsonAsync(nameof(Register).ToLower(), request);
 
-        if (queryParameters is not null && queryParameters.Count > 0)
-        {
-            var queryString = string.Join("&", queryParameters.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
 
-            route = $"{route}?{queryParameters}";
-        }
+        return result;
+    }
+
+    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false)
+    {
+        var route = $"{nameof(Login).ToLower()}?{nameof(useCookies)}={useCookies}&{nameof(useSessionCookies)}={useSessionCookies}";
 
         var response = await _httpClient.PostAsJsonAsync(route, request);
 
-        // if (!response.IsSuccessStatusCode)
-        // {
-        //     HandleUnsuccessfulStatusCode(response);
-        // }
+        var result = await simplishAuthClientResultFactory.CreateAsync<AccessTokenResponse>(response);
 
-        return response;
+        return result;
     }
 
-    // private async Task<TResponse> MakeRequest<TRequest, TResponse>(TRequest request, Dictionary<string, string>? queryParameters = null)
-    //     where TRequest : notnull
-    // {
-    //     var responseMessage = await MakeRequest(request, queryParameters);
-
-    //     if (responseMessage.IsSuccessStatusCode)
-    //     {
-    //         var response = (await responseMessage.Content.ReadFromJsonAsync<TResponse>())!;
-
-    //         return response;
-    //     }
-
-    //     if (responseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
-    //     {
-    //         // TODO: JE - This seems like magic... document it...
-    //         var response = (await responseMessage.Content.ReadFromJsonAsync<HttpValidationProblemDetails>())!;
-    //     }
-    // }
-
-    // private static void HandleUnsuccessfulStatusCode(HttpResponseMessage response)
-    // {
-
-    // }
-
-
-
-    public Task ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Refresh(RefreshRequest request)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsJsonAsync(nameof(Refresh).ToLower(), request);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync<AccessTokenResponse>(response);
+
+        return result;
     }
 
-    public async Task<AccessTokenResponse> Login(LoginRequest loginRequest, bool? useCookies = null, bool? useSessionCookies = null)
+    public async Task<SimplishAuthClientResult> ResendConfirmationEmail(ResendConfirmationEmailRequest request)
     {
-        // Dictionary<string, string> queryParameters = new()
-        // {
-        //     { nameof(useCookies), $"{useCookies ?? false}" },
-        //     { nameof(useSessionCookies), $"{useSessionCookies ?? false}" },
-        // };
+        var response = await _httpClient.PostAsJsonAsync(nameof(ResendConfirmationEmail).ToLower(), request);
 
-        // var response = await MakeRequest(loginRequest, queryParameters);
+        var result = await simplishAuthClientResultFactory.CreateAsync(response);
 
-        // return response;
-
-        throw new NotImplementedException();
+        return result;
     }
 
-    public Task<TwoFactorResponse> Manage2Fa(string bearerToken, TwoFactorRequest twoFactorRequest)
+    public async Task<SimplishAuthClientResult> ForgotPassword(ForgotPasswordRequest request)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsJsonAsync(nameof(ForgotPassword).ToLower(), request);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
+
+        return result;
     }
 
-    public Task<InfoResponse> ManageInfo(string bearerToken)
+    public async Task<SimplishAuthClientResult> ResetPassword(ResetPasswordRequest request)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.PostAsJsonAsync(nameof(ResetPassword).ToLower(), request);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
+
+        return result;
     }
 
-    public Task<InfoResponse> ManageInfo(string bearerToken, InfoRequest infoRequest)
+    // manage/2fa
+    public async Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(string bearerToken, TwoFactorRequest request)
     {
-        throw new NotImplementedException();
+        var route = "manage/2fa";
+
+        var method = HttpMethod.Post;
+
+        var requestMessage = new HttpRequestMessage(method, route);
+
+        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
+
+        var json = JsonSerializer.Serialize(request);
+        requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync<TwoFactorResponse>(response, isValidated: true);
+
+        return result;
     }
 
-    public Task<AccessTokenResponse> Refresh(RefreshRequest refreshRequest)
+    // manage/info
+    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken)
     {
-        throw new NotImplementedException();
+        var route = "manage/info";
+
+        var method = HttpMethod.Get;
+
+        var requestMessage = new HttpRequestMessage(method, route);
+
+        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync<InfoResponse>(response, isValidated: true);
+
+        return result;
     }
 
-    public async Task Register(RegisterRequest registerRequest) =>
-        await MakeRequest(registerRequest);
 
-    public Task ResendConfirmationEmail(ResendConfirmationEmailRequest resendConfirmationEmailRequest)
+    // manage/info
+    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken, InfoRequest request)
     {
-        throw new NotImplementedException();
-    }
+        var route = "manage/info";
 
-    public Task ResetPassword(ResetPasswordRequest resetPasswordRequest)
-    {
-        throw new NotImplementedException();
+        var method = HttpMethod.Post;
+
+        var requestMessage = new HttpRequestMessage(method, route);
+
+        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
+
+        var json = JsonSerializer.Serialize(request);
+        requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
+        var result = await simplishAuthClientResultFactory.CreateAsync<InfoResponse>(response, isValidated: true);
+
+        return result;
     }
 }
