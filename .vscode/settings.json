@@ -6,7 +6,13 @@
     },
     "cSpell.words": [
         "ASPNETCORE",
+        "Blazor",
+        "buildtransitive",
+        "contentfiles",
+        "onclick",
         "Revren",
-        "Simplish"
+        "Simplish",
+        "Swashbuckle",
+        "TOTP"
     ]
 }

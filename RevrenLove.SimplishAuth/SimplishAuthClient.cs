@@ -6,6 +6,7 @@ using RevrenLove.SimplishAuth.Models.Responses;
 
 namespace RevrenLove.SimplishAuth;
 
+// TODO: JE - Document this _and_ the interface
 internal class SimplishAuthClient(
     HttpClient httpClient,
     ISimplishAuthClientResultFactory simplishAuthClientResultFactory)

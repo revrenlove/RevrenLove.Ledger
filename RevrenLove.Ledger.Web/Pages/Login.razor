@@ -1,0 +1,49 @@
+@page "/login"
+@using RevrenLove.Ledger.Api.Client
+@using RevrenLove.SimplishAuth.Models.Requests
+@using System.Text.Json
+
+@inject LedgerApiClient Client
+
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
+<p>Email</p>
+
+<InputText @bind-Value="email" type="email" required />
+
+<p>Password</p>
+
+<InputText @bind-Value="password" type="password" required />
+
+<button @onclick="OnSubmit">Login</button>
+
+@if (errorMessage != null)
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private string email = string.Empty;
+    private string password = string.Empty;
+    private string errorMessage = string.Empty;
+
+    private async Task OnSubmit()
+    {
+        var result = await Client.SimplishAuthClient.Login(new LoginRequest
+        {
+            Email = email,
+            Password = password,
+        });
+
+        if (!result.IsSuccessStatusCode)
+        {
+            errorMessage = JsonSerializer.Serialize(result.HttpValidationProblemDetails);
+        }
+        else
+        {
+            // Redirect or handle successful login
+        }
+    }
+}

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Persistence;
 
@@ -9,12 +10,14 @@ public static class DiExtensions
 {
     public static IServiceCollection AddSQLiteDbContext(this IServiceCollection services, string connectionString)
     {
+        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+
         services
             .AddDbContext<LedgerDbContext>(options =>
             {
                 options.UseSqlite(connectionString, options =>
                 {
-                    options.MigrationsAssembly(typeof(DiExtensions).Assembly.FullName);
+                    options.MigrationsAssembly(assemblyName);
                 });
             });
 
