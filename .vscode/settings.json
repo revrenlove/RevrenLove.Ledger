@@ -2,10 +2,13 @@
     "files.exclude": {
         "**/.vs": true,
         "**/bin": true,
-        "**/obj": true,
+        "**/obj": true
     },
     "cSpell.words": [
         "ASPNETCORE",
+        "csdevkit",
+        "devcontainers",
+        "dotnettools",
         "Revren",
         "Simplish"
     ]

@@ -1,0 +1,23 @@
+{
+  "name": "RevrenLove Ledger Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-jammy",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-vscode.vscode-json"
+      ],
+    }
+  },
+  "postCreateCommand": "dotnet restore",
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspaces/RevrenLove.Ledger",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+  ]
+}
