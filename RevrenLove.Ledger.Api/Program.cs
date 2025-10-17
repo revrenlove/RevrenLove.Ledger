@@ -1,4 +1,16 @@
+using OpenIddict.Abstractions;
 using RevrenLove.Ledger.Entities;
+using RevrenLove.Ledger.Persistence;
+
+// TODO: JE - Move this into the config...
+var scopes = new[]
+{
+    "scp:openid",
+    "scp:email",
+    "scp:profile",
+    "api"
+};
+var clientId = "RevrenLoveLedgerBlazorClient";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,13 +22,24 @@ builder
     .AddIdentityApiEndpoints<LedgerUser>()
     .AddLedgerEntityFrameworkStores();
 
+builder.Services.AddOpenIddict<LedgerDbContext>(scopes);
+
+builder
+    .Services
+    .AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    });
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // options.
+    // TODO: JE - Add stuff for bearer tokens in swagger UI
 });
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 builder.Services
@@ -35,8 +58,8 @@ builder.Services
 
 var app = builder.Build();
 
-// TODO: JE - Figure out if we need this...
-// Configure the HTTP request pipeline.
+await app.SeedOpenIddictClient(clientId, scopes);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -46,15 +69,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapControllers();
 app.MapIdentityApi<LedgerUser>();
-
-app.UseCors();
 
 // TODO: JE - Add exception handling middleware...
 
-app.MapControllers();
 
 app.Run();
