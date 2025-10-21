@@ -1,16 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
-using RevrenLove.Ledger.Persistence;
-
-// TODO: JE - Move this into the config...
-var scopes = new[]
-{
-    "scp:openid",
-    "scp:email",
-    "scp:profile",
-    "api"
-};
-var clientId = "RevrenLoveLedgerBlazorClient";
 
 var builder = WebApplication.CreateBuilder(args);
 
