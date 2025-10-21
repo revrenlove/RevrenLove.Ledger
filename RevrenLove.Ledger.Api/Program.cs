@@ -1,4 +1,4 @@
-using OpenIddict.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
 using RevrenLove.Ledger.Persistence;
 
@@ -14,15 +14,16 @@ var clientId = "RevrenLoveLedgerBlazorClient";
 
 var builder = WebApplication.CreateBuilder(args);
 
+// TODO: JE - Change this depending on environment (DEV/PROD)...
+var connectionString = builder.Configuration.GetConnectionString("Default")!;
+
 builder
     .Services
     // TODO: JE - Change this for PROD - This is DEV ONLY!!!!!
-    .AddSQLiteDbContext(builder.Configuration.GetConnectionString("Default")!)
+    .AddSQLiteDbContext(connectionString)
     .AddAuthorization()
     .AddIdentityApiEndpoints<LedgerUser>()
     .AddLedgerEntityFrameworkStores();
-
-builder.Services.AddOpenIddict<LedgerDbContext>(scopes);
 
 builder
     .Services
@@ -57,8 +58,6 @@ builder.Services
     });
 
 var app = builder.Build();
-
-await app.SeedOpenIddictClient(clientId, scopes);
 
 if (app.Environment.IsDevelopment())
 {
