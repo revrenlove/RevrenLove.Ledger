@@ -9,6 +9,7 @@
         "Blazor",
         "buildtransitive",
         "contentfiles",
+        "Hmac",
         "Iddict",
         "onclick",
         "Revren",

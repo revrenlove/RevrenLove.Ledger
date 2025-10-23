@@ -12,7 +12,5 @@ public class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        builder.UseOpenIddict();
     }
 }
