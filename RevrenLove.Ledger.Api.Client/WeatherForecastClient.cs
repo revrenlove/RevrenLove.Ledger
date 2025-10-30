@@ -5,9 +5,15 @@ using RevrenLove.Ledger.Api.Models;
 
 namespace RevrenLove.Ledger.Api.Client;
 
-public class WeatherForecastClient(HttpClient httpClient)
+public interface IWeatherForecastClient
 {
-    private readonly HttpClient _httpClient = httpClient;
+    Task<WeatherForecast[]> Get();
+    Task<WeatherForecast> GetSecure(string bearerToken);
+}
+
+internal class WeatherForecastClient(LedgerApiHttpClient ledgerApiHttpClient) : IWeatherForecastClient
+{
+    private readonly HttpClient _httpClient = ledgerApiHttpClient.Instance;
 
     private static readonly string _resource = "WeatherForecast";
 

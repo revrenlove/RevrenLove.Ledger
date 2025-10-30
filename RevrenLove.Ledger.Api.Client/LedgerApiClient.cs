@@ -2,12 +2,16 @@ using RevrenLove.SimplishAuth;
 
 namespace RevrenLove.Ledger.Api.Client;
 
-public class LedgerApiClient(
-    WeatherForecastClient weatherForecastClient,
+internal class LedgerApiClient(
+    IWeatherForecastClient weatherForecastClient,
     ISimplishAuthClient simplishAuthClient
-)
+) : ILedgerApiClient
 {
-    public WeatherForecastClient WeatherForecast => weatherForecastClient;
-    public ISimplishAuthClient SimplishAuthClient => simplishAuthClient;
+    public IWeatherForecastClient WeatherForecast => weatherForecastClient;
+    public ISimplishAuthClient SimplishAuth => simplishAuthClient;
 }
 
+public interface ILedgerApiClient
+{
+    IWeatherForecastClient WeatherForecast { get; }
+}

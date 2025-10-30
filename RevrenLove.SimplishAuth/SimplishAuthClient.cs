@@ -7,10 +7,7 @@ using RevrenLove.SimplishAuth.Models.Responses;
 namespace RevrenLove.SimplishAuth;
 
 // TODO: JE - Document this _and_ the interface
-internal class SimplishAuthClient(
-    HttpClient httpClient,
-    ISimplishAuthClientResultFactory simplishAuthClientResultFactory)
-    : ISimplishAuthClient
+internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
 {
     private readonly HttpClient _httpClient = httpClient;
 
@@ -18,7 +15,7 @@ internal class SimplishAuthClient(
     {
         var response = await _httpClient.PostAsJsonAsync(nameof(Register).ToLower(), request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
+        var result = await SimplishAuthClientResult.CreateAsync(response, isValidated: true);
 
         return result;
     }
@@ -29,7 +26,7 @@ internal class SimplishAuthClient(
 
         var response = await _httpClient.PostAsJsonAsync(route, request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync<AccessTokenResponse>(response);
+        var result = await SimplishAuthClientResult<AccessTokenResponse>.CreateAsync(response);
 
         return result;
     }
@@ -38,7 +35,7 @@ internal class SimplishAuthClient(
     {
         var response = await _httpClient.PostAsJsonAsync(nameof(Refresh).ToLower(), request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync<AccessTokenResponse>(response);
+        var result = await SimplishAuthClientResult<AccessTokenResponse>.CreateAsync(response);
 
         return result;
     }
@@ -47,7 +44,7 @@ internal class SimplishAuthClient(
     {
         var response = await _httpClient.PostAsJsonAsync(nameof(ResendConfirmationEmail).ToLower(), request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync(response);
+        var result = await SimplishAuthClientResult.CreateAsync(response);
 
         return result;
     }
@@ -56,7 +53,7 @@ internal class SimplishAuthClient(
     {
         var response = await _httpClient.PostAsJsonAsync(nameof(ForgotPassword).ToLower(), request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
+        var result = await SimplishAuthClientResult.CreateAsync(response, isValidated: true);
 
         return result;
     }
@@ -65,7 +62,7 @@ internal class SimplishAuthClient(
     {
         var response = await _httpClient.PostAsJsonAsync(nameof(ResetPassword).ToLower(), request);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync(response, isValidated: true);
+        var result = await SimplishAuthClientResult.CreateAsync(response, isValidated: true);
 
         return result;
     }
@@ -86,7 +83,7 @@ internal class SimplishAuthClient(
 
         var response = await _httpClient.SendAsync(requestMessage);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync<TwoFactorResponse>(response, isValidated: true);
+        var result = await SimplishAuthClientResult<TwoFactorResponse>.CreateAsync(response, isValidated: true);
 
         return result;
     }
@@ -104,7 +101,7 @@ internal class SimplishAuthClient(
 
         var response = await _httpClient.SendAsync(requestMessage);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync<InfoResponse>(response, isValidated: true);
+        var result = await SimplishAuthClientResult<InfoResponse>.CreateAsync(response, isValidated: true);
 
         return result;
     }
@@ -126,7 +123,7 @@ internal class SimplishAuthClient(
 
         var response = await _httpClient.SendAsync(requestMessage);
 
-        var result = await simplishAuthClientResultFactory.CreateAsync<InfoResponse>(response, isValidated: true);
+        var result = await SimplishAuthClientResult<InfoResponse>.CreateAsync(response, isValidated: true);
 
         return result;
     }
