@@ -14,4 +14,5 @@ internal class LedgerApiClient(
 public interface ILedgerApiClient
 {
     IWeatherForecastClient WeatherForecast { get; }
+    public ISimplishAuthClient SimplishAuth { get; }
 }
