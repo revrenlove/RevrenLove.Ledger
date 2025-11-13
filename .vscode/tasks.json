@@ -14,7 +14,7 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-web",
+            "label": "build-ui",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -27,15 +27,11 @@
         },
         {
             "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/RevrenLove.Ledger.sln",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            "dependsOn": [
+                "build-api",
+                "build-ui"
             ],
-            "problemMatcher": "$msCompile",
+            "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
                 "isDefault": true

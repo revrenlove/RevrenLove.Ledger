@@ -13,6 +13,8 @@
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Models\RevrenLove.Ledger.Api.Models.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Client\RevrenLove.Ledger.Api.Client.csproj" />
+    <!-- TODO: JE - Redo this perhaps to have a factory/config project -->
+    <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SQLite\RevrenLove.Ledger.Persistence.SQLite.csproj" />
   </ItemGroup>
 
 </Project>
