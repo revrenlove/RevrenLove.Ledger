@@ -1,6 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// TODO: JE - Make this not magic
+builder.Services.AddRevrenLedgerSQLiteDbContext("Data Source=RevrenLoveLedger.db");
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

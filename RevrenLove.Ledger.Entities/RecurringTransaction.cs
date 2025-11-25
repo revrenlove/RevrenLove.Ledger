@@ -8,8 +8,8 @@ public class RecurringTransaction : IActivable
     public Guid Id { get; set; }
 
     public required Guid FinancialAccountId { get; set; }
-    public Guid? AssociatedFinancialAccountId { get; set; }
 
+    // TODO: JE - Fluent API
     [Precision(10, 2)]
     public required decimal Amount { get; set; }
 
@@ -17,13 +17,7 @@ public class RecurringTransaction : IActivable
 
     public required Frequency Frequency { get; set; }
 
-    public string Description { get; set; } = default!;
-
     public required bool IsActive { get; set; } = true;
 
-
     public required FinancialAccount FinancialAccount { get; set; }
-    public FinancialAccount? AssociatedFinancialAccount { get; set; }
-
-    public ICollection<LedgerTransaction> LedgerItems { get; } = new HashSet<LedgerTransaction>();
 }
