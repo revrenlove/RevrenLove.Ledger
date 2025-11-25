@@ -13,5 +13,5 @@ public class FinancialAccount : IActivable
 
     public required LedgerUser User { get; set; }
 
-    public ICollection<LedgerItem> LedgerItems { get; } = new HashSet<LedgerItem>();
+    public ICollection<LedgerTransaction> LedgerItems { get; } = new HashSet<LedgerTransaction>();
 }

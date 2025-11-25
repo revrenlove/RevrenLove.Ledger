@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RevrenLove.Ledger.Entities;
 
-public class LedgerItem
+public class LedgerTransaction
 {
     public Guid Id { get; set; }
 

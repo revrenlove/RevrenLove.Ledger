@@ -25,5 +25,5 @@ public class RecurringTransaction : IActivable
     public required FinancialAccount FinancialAccount { get; set; }
     public FinancialAccount? AssociatedFinancialAccount { get; set; }
 
-    public ICollection<LedgerItem> LedgerItems { get; } = new HashSet<LedgerItem>();
+    public ICollection<LedgerTransaction> LedgerItems { get; } = new HashSet<LedgerTransaction>();
 }
