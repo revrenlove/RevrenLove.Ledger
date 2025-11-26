@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence;
+namespace RevrenLove.Ledger.Persistence.SQLite;
 
-public class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
+public class LedgerSQLiteDbContext(DbContextOptions<LedgerSQLiteDbContext> options)
     : IdentityDbContext<LedgerUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<FinancialAccount> FinancialAccounts { get; set; }
@@ -16,5 +16,7 @@ public class LedgerDbContext(DbContextOptions<LedgerDbContext> options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(typeof(LedgerSQLiteDbContext).Assembly);
     }
 }

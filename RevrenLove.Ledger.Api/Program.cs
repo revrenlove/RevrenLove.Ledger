@@ -1,4 +1,5 @@
 using RevrenLove.Ledger.Entities;
+using RevrenLove.Ledger.Persistence.SQLite;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,8 @@ builder.Services
     .AddLedgerApiCors(builder.Environment)
     .AddRevrenLedgerSQLiteDbContext(connectionString)
     .AddIdentityApiEndpoints<LedgerUser>()
-    .AddLedgerEntityFrameworkStores();
+    // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
+    .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
 
 builder.Services.AddControllers();
 

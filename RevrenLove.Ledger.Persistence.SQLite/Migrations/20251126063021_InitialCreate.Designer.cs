@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RevrenLove.Ledger.Persistence;
+using RevrenLove.Ledger.Persistence.SQLite;
 
 #nullable disable
 
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
-    [DbContext(typeof(LedgerDbContext))]
-    [Migration("20251125062536_MuckingWitghLedgerUser")]
-    partial class MuckingWitghLedgerUser
+    [DbContext(typeof(LedgerSQLiteDbContext))]
+    [Migration("20251126063021_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,7 +183,9 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
@@ -220,14 +222,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
@@ -402,7 +396,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.ProspectiveTransaction", b =>
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany()
+                        .WithMany("ProspectiveTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -413,7 +407,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.RecurringTransaction", b =>
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany()
+                        .WithMany("RecurringTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -424,6 +418,10 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.FinancialAccount", b =>
                 {
                     b.Navigation("LedgerTransactions");
+
+                    b.Navigation("ProspectiveTransactions");
+
+                    b.Navigation("RecurringTransactions");
                 });
 #pragma warning restore 612, 618
         }

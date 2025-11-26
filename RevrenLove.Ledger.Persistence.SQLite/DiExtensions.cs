@@ -1,6 +1,5 @@
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using RevrenLove.Ledger.Persistence;
+using RevrenLove.Ledger.Persistence.SQLite;
 
 #pragma warning disable IDE0130
 namespace Microsoft.Extensions.DependencyInjection;
@@ -12,14 +11,12 @@ public static class DiExtensions
         this IServiceCollection services,
         string connectionString)
     {
-        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-
         services
-            .AddDbContext<LedgerDbContext>(options =>
+            .AddDbContext<LedgerSQLiteDbContext>(options =>
             {
                 options.UseSqlite(connectionString, options =>
                 {
-                    options.MigrationsAssembly(assemblyName);
+                    options.MigrationsAssembly(typeof(LedgerSQLiteDbContext).Assembly.FullName);
                 });
             });
 

@@ -2,20 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RevrenLove.Ledger.Persistence;
+using RevrenLove.Ledger.Persistence.SQLite;
 
 #nullable disable
 
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
-    [DbContext(typeof(LedgerDbContext))]
-    [Migration("20251126041325_RemovingColumns")]
-    partial class RemovingColumns
+    [DbContext(typeof(LedgerSQLiteDbContext))]
+    partial class LedgerSQLiteDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -183,7 +180,9 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
@@ -394,7 +393,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.ProspectiveTransaction", b =>
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany()
+                        .WithMany("ProspectiveTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -405,7 +404,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.RecurringTransaction", b =>
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany()
+                        .WithMany("RecurringTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -416,6 +415,10 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
             modelBuilder.Entity("RevrenLove.Ledger.Entities.FinancialAccount", b =>
                 {
                     b.Navigation("LedgerTransactions");
+
+                    b.Navigation("ProspectiveTransactions");
+
+                    b.Navigation("RecurringTransactions");
                 });
 #pragma warning restore 612, 618
         }
