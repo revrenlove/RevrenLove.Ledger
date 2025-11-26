@@ -23,7 +23,6 @@ var app = builder.Build();
 
 #region Web Application Configuration
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -35,8 +34,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors();
-
-app.UseAuthorization();
 
 app.MapControllers();
 app.MapIdentityApi<LedgerUser>();
