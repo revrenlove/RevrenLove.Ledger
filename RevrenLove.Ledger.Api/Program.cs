@@ -1,28 +1,27 @@
+using RevrenLove.Ledger.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// TODO: JE - Make this not magic
-builder.Services.AddRevrenLedgerSQLiteDbContext("Data Source=RevrenLoveLedger.db");
+#region Register Services
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var connectionString = builder.Configuration.GetConnectionString("Default")!;
 
 builder.Services
-    // TODO: JE - This is for DEV shit only!!!!
-    // Enable CORS for everything
-    .AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-    });
+    .AddAuthorization()
+    .AddLedgerApiCors(builder.Environment)
+    .AddRevrenLedgerSQLiteDbContext(connectionString)
+    .AddIdentityApiEndpoints<LedgerUser>()
+    .AddLedgerEntityFrameworkStores();
+
+builder.Services.AddControllers();
+
+builder.Services.AddOpenApi();
+
+#endregion
 
 var app = builder.Build();
+
+#region Web Application Configuration
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -32,10 +31,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCors();
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapIdentityApi<LedgerUser>();
+
+#endregion
 
 app.Run();
