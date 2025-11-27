@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using RevrenLove.SimplishAuth.Client.Models;
 
 namespace RevrenLove.SimplishAuth.Client;
 

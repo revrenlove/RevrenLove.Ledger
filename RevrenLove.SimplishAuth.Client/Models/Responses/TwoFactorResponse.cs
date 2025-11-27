@@ -1,4 +1,4 @@
-namespace RevrenLove.SimplishAuth.Client.Models.Responses;
+namespace RevrenLove.SimplishAuth.Client;
 
 //
 // Summary:

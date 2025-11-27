@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Models\RevrenLove.Ledger.Api.Models.csproj" />
+    <ProjectReference Include="..\RevrenLove.SimplishAuth.Client\RevrenLove.SimplishAuth.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

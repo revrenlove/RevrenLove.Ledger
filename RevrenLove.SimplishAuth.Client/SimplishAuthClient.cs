@@ -1,8 +1,6 @@
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using RevrenLove.SimplishAuth.Client.Models.Requests;
-using RevrenLove.SimplishAuth.Client.Models.Responses;
 
 namespace RevrenLove.SimplishAuth.Client;
 

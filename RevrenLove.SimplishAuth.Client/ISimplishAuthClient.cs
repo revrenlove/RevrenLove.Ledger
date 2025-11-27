@@ -1,6 +1,3 @@
-using RevrenLove.SimplishAuth.Client.Models.Requests;
-using RevrenLove.SimplishAuth.Client.Models.Responses;
-
 namespace RevrenLove.SimplishAuth.Client;
 
 public interface ISimplishAuthClient

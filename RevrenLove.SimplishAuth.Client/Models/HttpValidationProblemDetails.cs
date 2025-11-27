@@ -1,4 +1,4 @@
-namespace RevrenLove.SimplishAuth.Client.Models;
+namespace RevrenLove.SimplishAuth.Client;
 
 /// <summary>
 /// A validation problem details object that conforms to RFC 7807.
