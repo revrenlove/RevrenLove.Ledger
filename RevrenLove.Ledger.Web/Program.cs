@@ -8,6 +8,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var ledgerApiClientBaseAddress = builder.Configuration.GetValue<string>("LedgerApiClientBaseAddress")!;
 
-builder.Services.AddLedgerApiClient(ledgerApiClientBaseAddress);
+builder.Services.AddLedgerApiClientAsService(ledgerApiClientBaseAddress);
 
 await builder.Build().RunAsync();

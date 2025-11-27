@@ -11,7 +11,7 @@ public static class DiExtensions
     /// </summary>
     /// <param name="services">The `Microsoft.Extensions.DependencyInjection.IServiceCollection` to add the service to.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSimplishAuthClient(this IServiceCollection services)
+    public static IServiceCollection AddSimplishAuthClientAsService(this IServiceCollection services)
     {
         services
             .AddScoped<ISimplishAuthClient, SimplishAuthClient>();
@@ -25,26 +25,28 @@ public static class DiExtensions
     /// <param name="services">The `Microsoft.Extensions.DependencyInjection.IServiceCollection` to add the service to.</param>
     /// <param name="httpClient">The `HttpClient` that `SimplishAuthClient` will use.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSimplishAuthClient(this IServiceCollection services, HttpClient httpClient)
+    public static IServiceCollection AddSimplishAuthClientAsService(this IServiceCollection services, HttpClient httpClient)
     {
         services
-            .AddScoped<ISimplishAuthClient>(_ => new SimplishAuthClient(httpClient));
+            .AddScoped<ISimplishAuthClient, SimplishAuthClient>(_ => new(httpClient));
 
         return services;
     }
 
     /// <summary>
-    /// Registers the SimplishAuthClient that will use a new, isolated `HttpClient` instance with the specified `baseAddress`.
+    /// Registers the SimplishAuthClient that will use the registered HttpClient with the supplied key.
     /// </summary>
     /// <param name="services">The `Microsoft.Extensions.DependencyInjection.IServiceCollection` to add the service to.</param>
-    /// <param name="baseAddress">The base address for the `HttpClient`.</param>
+    /// <param name="serviceKey">The key for the registered HttpClient</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSimplishAuthClient(this IServiceCollection services, string baseAddress)
+    public static IServiceCollection AddSimplishAuthClientAsService(this IServiceCollection services, string serviceKey)
     {
-        var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+        services.AddScoped<ISimplishAuthClient, SimplishAuthClient>(sp =>
+        {
+            var httpClient = sp.GetRequiredKeyedService<HttpClient>(serviceKey);
 
-        services
-            .AddSimplishAuthClient(httpClient);
+            return new(httpClient);
+        });
 
         return services;
     }

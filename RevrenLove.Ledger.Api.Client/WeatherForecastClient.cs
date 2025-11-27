@@ -3,7 +3,13 @@ using RevrenLove.Ledger.Api.Models;
 
 namespace RevrenLove.Ledger.Api.Client;
 
-public class WeatherForecastClient(HttpClient httpClient)
+public interface IWeatherForecastClient
+{
+    Task<WeatherForecast[]> Get();
+    Task<WeatherForecast[]> GetSecure(string token);
+}
+
+internal class WeatherForecastClient(HttpClient httpClient) : IWeatherForecastClient
 {
     private static readonly string _resource = "WeatherForecast";
 
