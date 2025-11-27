@@ -11,4 +11,9 @@ public class WeatherForecastClient(HttpClient httpClient)
         await
             httpClient
                 .GetFromJsonAsync<WeatherForecast[]>(_resource) ?? [];
+
+    public async Task<WeatherForecast[]> GetSecure(string token) =>
+        await
+            httpClient
+                .GetFromJsonAsync<WeatherForecast[]>(token, _resource) ?? [];
 }
