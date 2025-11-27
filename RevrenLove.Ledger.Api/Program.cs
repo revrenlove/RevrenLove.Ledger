@@ -10,14 +10,14 @@ var connectionString = builder.Configuration.GetConnectionString("Default")!;
 builder.Services
     .AddAuthorization()
     .AddLedgerApiCors(builder.Environment)
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
     .AddRevrenLedgerSQLiteDbContext(connectionString)
     .AddIdentityApiEndpoints<LedgerUser>()
     // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
     .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
 
 builder.Services.AddControllers();
-
-builder.Services.AddOpenApi();
 
 #endregion
 
@@ -34,6 +34,8 @@ app.UseCors();
 
 app.MapControllers();
 app.MapIdentityApi<LedgerUser>();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 #endregion
 
