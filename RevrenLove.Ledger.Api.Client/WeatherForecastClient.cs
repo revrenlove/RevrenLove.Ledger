@@ -5,21 +5,19 @@ namespace RevrenLove.Ledger.Api.Client;
 
 public interface IWeatherForecastClient
 {
-    Task<WeatherForecast[]> Get();
-    Task<WeatherForecast[]> GetSecure(string token);
+    Task<WeatherForecast[]> Get(CancellationToken cancellationToken = default);
+    Task<WeatherForecast[]> GetSecure(CancellationToken cancellationToken = default);
 }
 
 internal class WeatherForecastClient(HttpClient httpClient) : IWeatherForecastClient
 {
-    private static readonly string _resource = "WeatherForecast";
-
-    public async Task<WeatherForecast[]> Get() =>
+    public async Task<WeatherForecast[]> Get(CancellationToken cancellationToken = default) =>
         await
             httpClient
-                .GetFromJsonAsync<WeatherForecast[]>(_resource) ?? [];
+                .GetFromJsonAsync<WeatherForecast[]>(cancellationToken) ?? [];
 
-    public async Task<WeatherForecast[]> GetSecure(string token) =>
+    public async Task<WeatherForecast[]> GetSecure(CancellationToken cancellationToken = default) =>
         await
             httpClient
-                .GetFromJsonAsync<WeatherForecast[]>(token, _resource) ?? [];
+                .GetFromJsonAsync<WeatherForecast[]>("secure", cancellationToken) ?? [];
 }

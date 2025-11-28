@@ -6,22 +6,41 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DiExtensions
 {
-    private static readonly string _httpClientKey = Guid.NewGuid().ToString();
+    private static string? _baseAddress;
+    private static Action<IHttpClientBuilder>? _configure;
 
-    public static IServiceCollection AddLedgerApiClientAsService(this IServiceCollection services, string baseAddress)
+    public static IServiceCollection AddLedgerApiClient(this IServiceCollection services, string baseAddress, Action<IHttpClientBuilder>? configure = null)
     {
-        services.AddKeyedScoped<HttpClient>(_httpClientKey, (_, _) => new() { BaseAddress = new Uri(baseAddress) });
+        _baseAddress = baseAddress.TrimEnd('/');
+        _configure = configure;
 
         services
-            .AddSimplishAuthClientAsService(_httpClientKey)
-            .AddScoped<IWeatherForecastClient, WeatherForecastClient>(sp =>
-            {
-                var httpClient = sp.GetRequiredKeyedService<HttpClient>(_httpClientKey);
-
-                return new(httpClient);
-            })
-            .AddScoped<LedgerApiClient>();
+            .AddScoped<ILedgerApiClient, LedgerApiClient>()
+            .AddSubClient<IWeatherForecastClient, WeatherForecastClient>()
+            // Add More Sub Clients...
+            .AddSimplishAuthClient(_baseAddress);
 
         return services;
+    }
+
+    private static IServiceCollection AddSubClient<TClient, TImplementation>(this IServiceCollection services)
+        where TClient : class
+        where TImplementation : class, TClient
+    {
+        var httpClientBuilder = services.AddHttpClient<TClient, TImplementation>(ConfigureClient<TImplementation>);
+
+        _configure?.Invoke(httpClientBuilder);
+
+        return services;
+    }
+
+    private static void ConfigureClient<T>(HttpClient client)
+    {
+        var baseAddress = _baseAddress ?? throw new InvalidOperationException("Base address is not set.");
+        var resource = typeof(T).Name.Replace("Client", string.Empty);
+
+        var uri = new Uri($"{baseAddress}/{resource}");
+
+        client.BaseAddress = uri;
     }
 }

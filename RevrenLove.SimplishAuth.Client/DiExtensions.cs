@@ -6,6 +6,12 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DiExtensions
 {
+    public static IHttpClientBuilder AddSimplishAuthClient(this IServiceCollection services, string baseAddress) =>
+        services.AddHttpClient<ISimplishAuthClient, SimplishAuthClient>(httpClient =>
+        {
+            httpClient.BaseAddress = new(baseAddress);
+        });
+
     /// <summary>
     /// Registers the SimplishAuthClient. This will use the `HttpClient` already registered in the DI container.
     /// </summary>

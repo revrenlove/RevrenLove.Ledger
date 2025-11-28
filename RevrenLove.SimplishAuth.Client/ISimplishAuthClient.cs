@@ -31,6 +31,8 @@ public interface ISimplishAuthClient
     // 400 - HttpValidationProblemDetails
     Task<SimplishAuthClientResult> ResetPassword(ResetPasswordRequest request);
 
+    // TODO: JE - We probably don't need to have the bearer token parameter as that _should_ be handled by the `HttpClient`
+
     // POST - Bearer
     // 200 - TwoFactorResponse
     // 400 - HttpValidationProblemDetails
