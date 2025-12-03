@@ -8,9 +8,19 @@ public interface ISimplishAuthClient
     Task<SimplishAuthClientResult> Register(RegisterRequest request);
 
     // POST
+    // 200
+    // 400 - HttpValidationProblemDetails
+    Task<SimplishAuthClientResult> Register(string email, string password);
+
+    // POST
     // 200 - AccessTokenResponse
     // 401
     Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false);
+
+    // POST
+    // 200 - AccessTokenResponse
+    // 401
+    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password, bool useCookies = false, bool useSessionCookies = false);
 
     // POST
     // 200 - AccessTokenResponse
@@ -38,17 +48,20 @@ public interface ISimplishAuthClient
     // 400 - HttpValidationProblemDetails
     // 401
     // TODO: JE - This may need to be split up into multiple methods based on what this shit is intended to do...
-    Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(string bearerToken, TwoFactorRequest request);
+    Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(TwoFactorRequest request);
 
     // GET - Bearer
     // 200 - InfoResponse
     // 400 - HttpValidationProblemDetails
     // 404
-    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken);
+    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo();
 
     // POST - Bearer
     // 200 - InfoResponse
     // 400 - HttpValidationProblemDetails
     // 404
-    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken, InfoRequest request);
+    Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(InfoRequest request);
+
+    // TODO: JE - make a note that this is custom cookie shit...
+    Task<SimplishAuthClientResult> Logout();
 }

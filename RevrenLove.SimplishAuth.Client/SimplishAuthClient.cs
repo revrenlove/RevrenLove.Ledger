@@ -1,3 +1,4 @@
+using System.Formats.Asn1;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -19,6 +20,10 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
         return result;
     }
 
+    public async Task<SimplishAuthClientResult> Register(string email, string password) =>
+        await
+            Register(new() { Email = email, Password = password });
+
     public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false)
     {
         var route = $"{nameof(Login).ToLower()}?{nameof(useCookies)}={useCookies}&{nameof(useSessionCookies)}={useSessionCookies}";
@@ -29,6 +34,10 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
 
         return result;
     }
+
+    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password, bool useCookies = false, bool useSessionCookies = false) =>
+        await
+            Login(new() { Email = email, Password = password }, useCookies, useSessionCookies);
 
     public async Task<SimplishAuthClientResult<AccessTokenResponse>> Refresh(RefreshRequest request)
     {
@@ -67,20 +76,11 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
     }
 
     // manage/2fa
-    public async Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(string bearerToken, TwoFactorRequest request)
+    public async Task<SimplishAuthClientResult<TwoFactorResponse>> Manage2Fa(TwoFactorRequest request)
     {
         var route = "manage/2fa";
 
-        var method = HttpMethod.Post;
-
-        var requestMessage = new HttpRequestMessage(method, route);
-
-        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
-
-        var json = JsonSerializer.Serialize(request);
-        requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.PutAsJsonAsync(route, request);
 
         var result = await SimplishAuthClientResult<TwoFactorResponse>.CreateAsync(response, isValidated: true);
 
@@ -88,17 +88,11 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
     }
 
     // manage/info
-    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken)
+    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo()
     {
         var route = "manage/info";
 
-        var method = HttpMethod.Get;
-
-        var requestMessage = new HttpRequestMessage(method, route);
-
-        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
-
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.GetAsync(route);
 
         var result = await SimplishAuthClientResult<InfoResponse>.CreateAsync(response, isValidated: true);
 
@@ -107,22 +101,22 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
 
 
     // manage/info
-    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(string bearerToken, InfoRequest request)
+    public async Task<SimplishAuthClientResult<InfoResponse>> ManageInfo(InfoRequest request)
     {
         var route = "manage/info";
 
-        var method = HttpMethod.Post;
-
-        var requestMessage = new HttpRequestMessage(method, route);
-
-        requestMessage.Headers.Add("Authorization", $"Bearer {bearerToken}");
-
-        var json = JsonSerializer.Serialize(request);
-        requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.PostAsJsonAsync(route, request);
 
         var result = await SimplishAuthClientResult<InfoResponse>.CreateAsync(response, isValidated: true);
+
+        return result;
+    }
+
+    public async Task<SimplishAuthClientResult> Logout()
+    {
+        var response = await _httpClient.PostAsJsonAsync(nameof(Logout).ToLower(), new { });
+
+        var result = await SimplishAuthClientResult.CreateAsync(response);
 
         return result;
     }
