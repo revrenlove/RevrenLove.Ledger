@@ -3,12 +3,21 @@ using RevrenLove.Ledger.Api.Models;
 
 namespace RevrenLove.Ledger.Api.Client;
 
-public class WeatherForecastClient(HttpClient httpClient)
+public interface IWeatherForecastClient
 {
-    private static readonly string _resource = "WeatherForecast";
+    Task<WeatherForecast[]> Get(CancellationToken cancellationToken = default);
+    Task<WeatherForecast[]> GetSecure(CancellationToken cancellationToken = default);
+}
 
-    public async Task<WeatherForecast[]> Get() =>
+internal class WeatherForecastClient(HttpClient httpClient) : IWeatherForecastClient
+{
+    public async Task<WeatherForecast[]> Get(CancellationToken cancellationToken = default) =>
         await
             httpClient
-                .GetFromJsonAsync<WeatherForecast[]>(_resource) ?? [];
+                .GetFromJsonAsync<WeatherForecast[]>(cancellationToken) ?? [];
+
+    public async Task<WeatherForecast[]> GetSecure(CancellationToken cancellationToken = default) =>
+        await
+            httpClient
+                .GetFromJsonAsync<WeatherForecast[]>("secure", cancellationToken) ?? [];
 }

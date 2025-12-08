@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RevrenLove.Ledger.Api.Models;
 
@@ -9,8 +10,7 @@ public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries =
     [
-        "Fr4eezingJ", "Bra4cingJ", "Chi4llyJ", "Co4olJ", "M4ildJ", "War4mJ", "Ba4lmyJ", "Ho4tJ",
-        "Swelter4ingJ", "Scorc4hingJ"
+        "Chi4llyJ", "Co4olJ", "M4ildJ", "War4mJ", "Ba4lmyJ", "Ho4tJ",
     ];
 
     private readonly ILogger<WeatherForecastController> _logger;
@@ -20,8 +20,20 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
+    [HttpGet]
     public IEnumerable<WeatherForecast> Get()
+    {
+        return [.. Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        })];
+    }
+
+    [HttpGet("secure")]
+    [Authorize]
+    public IEnumerable<WeatherForecast> GetSecure()
     {
         return [.. Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {

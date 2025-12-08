@@ -1,4 +1,6 @@
-﻿@page "/weather"
+@page "/weather-secure"
+@* TODO: JE - add actual handling for this in the routing *@
+@attribute [Authorize]
 
 @using RevrenLove.Ledger.Api.Client
 @using RevrenLove.Ledger.Api.Models
@@ -9,7 +11,7 @@
 
 <h1>Weather</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<p>This component demonstrates fetching <em>secure</em> data from the server.</p>
 
 @if (forecasts == null)
 {
@@ -45,6 +47,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Client.WeatherForecast.Get();
+        try
+        {
+            forecasts = await Client.WeatherForecast.GetSecure();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching secure weather data: {ex.Message}");
+        }
     }
 }

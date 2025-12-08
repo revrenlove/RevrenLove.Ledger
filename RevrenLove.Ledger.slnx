@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="BlazorWasmAuth/BlazorWasmAuth.csproj" />
+  <Project Path="RevrenLove.Ledger.Api.Client/RevrenLove.Ledger.Api.Client.csproj" />
+  <Project Path="RevrenLove.Ledger.Api.Models/RevrenLove.Ledger.Api.Models.csproj" />
+  <Project Path="RevrenLove.Ledger.Api/RevrenLove.Ledger.Api.csproj" />
+  <Project Path="RevrenLove.Ledger.Entities/RevrenLove.Ledger.Entities.csproj" />
+  <Project Path="RevrenLove.Ledger.Persistence.SQLite/RevrenLove.Ledger.Persistence.SQLite.csproj" />
+  <Project Path="RevrenLove.Ledger.Shared/RevrenLove.Ledger.Shared.csproj" />
+  <Project Path="RevrenLove.Ledger.Web/RevrenLove.Ledger.Web.csproj" />
+  <Project Path="RevrenLove.SimplishAuth.Client/RevrenLove.SimplishAuth.Client.csproj" />
+</Solution>
