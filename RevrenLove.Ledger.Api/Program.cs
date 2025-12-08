@@ -10,14 +10,40 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default")!;
 
 builder.Services
-    .AddAuthorization()
-    .AddLedgerApiCors(builder.Environment)
+    .AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddIdentityCookies();
+
+builder.Services
+    .AddAuthorizationBuilder();
+
+builder.Services
+    // TODO: JE - Figure out all this CORS shit...
+    // .AddLedgerApiCors(builder.Environment)
+    .AddCors(options =>
+    {
+        options.AddPolicy("AllowFrontend",
+            policy =>
+                policy
+                    .WithOrigins("http://localhost:5088", "https://localhost:7171", "https://localhost:7125")
+                    .AllowCredentials()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+    })
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddRevrenLedgerSQLiteDbContext(connectionString)
-    .AddIdentityApiEndpoints<LedgerUser>()
-    // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
-    .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
+    .AddRevrenLedgerSQLiteDbContext(connectionString);
+
+// builder.Services
+//     .AddIdentityApiEndpoints<LedgerUser>()
+//     // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
+//     .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
+
+// Add identity and opt-in to endpoints
+builder.Services.AddIdentityCore<LedgerUser>()
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<LedgerSQLiteDbContext>()
+    .AddApiEndpoints();
+
 
 builder.Services.AddControllers();
 
@@ -29,10 +55,10 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCors();
 
 app.MapControllers();
 app.MapIdentityApi<LedgerUser>();

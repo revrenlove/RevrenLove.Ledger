@@ -16,7 +16,14 @@ public class SimplishAuthClientResult<T> : SimplishAuthClientResult
 
         if (result.IsSuccessStatusCode)
         {
-            result.Value = await httpResponse.Content.ReadFromJsonAsync<T>();
+            try
+            {
+                result.Value = await result.HttpResponse.Content.ReadFromJsonAsync<T>();
+            }
+            catch
+            {
+                throw;
+            }
         }
         else
         {
@@ -34,7 +41,7 @@ public class SimplishAuthClientResult
     public string? ReasonPhrase => HttpResponse.ReasonPhrase;
     public HttpValidationProblemDetails? HttpValidationProblemDetails { get; internal set; }
 
-    protected HttpResponseMessage HttpResponse;
+    protected HttpResponseMessage HttpResponse { get; }
 
     protected SimplishAuthClientResult(HttpResponseMessage httpResponse) => HttpResponse = httpResponse;
 

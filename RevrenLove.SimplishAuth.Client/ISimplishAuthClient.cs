@@ -15,12 +15,32 @@ public interface ISimplishAuthClient
     // POST
     // 200 - AccessTokenResponse
     // 401
-    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false);
+    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request);
 
     // POST
     // 200 - AccessTokenResponse
     // 401
-    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password, bool useCookies = false, bool useSessionCookies = false);
+    Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password);
+
+    // POST
+    // 200
+    // 401
+    Task<SimplishAuthClientResult> LoginWithCookies(LoginRequest request);
+
+    // POST
+    // 200
+    // 401
+    Task<SimplishAuthClientResult> LoginWithCookies(string email, string password);
+
+    // POST
+    // 200
+    // 401
+    Task<SimplishAuthClientResult> LoginWithSessionCookies(LoginRequest request);
+
+    // POST
+    // 200
+    // 401
+    Task<SimplishAuthClientResult> LoginWithSessionCookies(string email, string password);
 
     // POST
     // 200 - AccessTokenResponse

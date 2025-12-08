@@ -1,7 +1,4 @@
-using System.Formats.Asn1;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace RevrenLove.SimplishAuth.Client;
 
@@ -24,20 +21,48 @@ internal class SimplishAuthClient(HttpClient httpClient) : ISimplishAuthClient
         await
             Register(new() { Email = email, Password = password });
 
-    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request, bool useCookies = false, bool useSessionCookies = false)
+    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(LoginRequest request)
     {
-        var route = $"{nameof(Login).ToLower()}?{nameof(useCookies)}={useCookies}&{nameof(useSessionCookies)}={useSessionCookies}";
-
-        var response = await _httpClient.PostAsJsonAsync(route, request);
+        var response = await _httpClient.PostAsJsonAsync(nameof(Login).ToLower(), request);
 
         var result = await SimplishAuthClientResult<AccessTokenResponse>.CreateAsync(response);
 
         return result;
     }
 
-    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password, bool useCookies = false, bool useSessionCookies = false) =>
+    public async Task<SimplishAuthClientResult<AccessTokenResponse>> Login(string email, string password) =>
         await
-            Login(new() { Email = email, Password = password }, useCookies, useSessionCookies);
+            Login(new() { Email = email, Password = password });
+
+    public async Task<SimplishAuthClientResult> LoginWithCookies(LoginRequest request)
+    {
+        var route = $"{nameof(Login).ToLower()}?useCookies=true";
+
+        var response = await _httpClient.PostAsJsonAsync(route, request);
+
+        var result = await SimplishAuthClientResult.CreateAsync(response);
+
+        return result;
+    }
+
+    public async Task<SimplishAuthClientResult> LoginWithCookies(string email, string password) =>
+        await
+            LoginWithCookies(new() { Email = email, Password = password });
+
+    public async Task<SimplishAuthClientResult> LoginWithSessionCookies(LoginRequest request)
+    {
+        var route = $"{nameof(Login).ToLower()}?useSessionCookies=true";
+
+        var response = await _httpClient.PostAsJsonAsync(route, request);
+
+        var result = await SimplishAuthClientResult.CreateAsync(response);
+
+        return result;
+    }
+
+    public async Task<SimplishAuthClientResult> LoginWithSessionCookies(string email, string password) =>
+        await
+            LoginWithSessionCookies(new() { Email = email, Password = password });
 
     public async Task<SimplishAuthClientResult<AccessTokenResponse>> Refresh(RefreshRequest request)
     {

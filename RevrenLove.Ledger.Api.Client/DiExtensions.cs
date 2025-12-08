@@ -16,9 +16,11 @@ public static class DiExtensions
 
         services
             .AddScoped<ILedgerApiClient, LedgerApiClient>()
-            .AddSubClient<IWeatherForecastClient, WeatherForecastClient>()
             // Add More Sub Clients...
-            .AddSimplishAuthClient(_baseAddress);
+            .AddSubClient<IWeatherForecastClient, WeatherForecastClient>();
+
+        var simplishAuthClientBUilder = services.AddSimplishAuthClient(_baseAddress);
+        _configure?.Invoke(simplishAuthClientBUilder);
 
         return services;
     }
@@ -39,7 +41,7 @@ public static class DiExtensions
         var baseAddress = _baseAddress ?? throw new InvalidOperationException("Base address is not set.");
         var resource = typeof(T).Name.Replace("Client", string.Empty);
 
-        var uri = new Uri($"{baseAddress}/{resource}");
+        var uri = new Uri($"{baseAddress}/{resource}/");
 
         client.BaseAddress = uri;
     }

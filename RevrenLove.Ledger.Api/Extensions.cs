@@ -6,24 +6,25 @@ public static class Extensions
 {
     public static IServiceCollection AddLedgerApiCors(this IServiceCollection services, IWebHostEnvironment webHostEnvironment)
     {
-        if (webHostEnvironment.IsDevelopment())
-        {
-            services
-                .AddCors(options =>
+        // if (webHostEnvironment.IsDevelopment())
+        // {
+        services
+            .AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
                 {
-                    options.AddDefaultPolicy(policy =>
-                    {
-                        policy
-                            .AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader();
-                    });
+                    policy
+                        // TODO: JE - Make this part of the appSettings...
+                        .WithOrigins("https://localhost:5088")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 });
-        }
-        else
-        {
-            // TODO: JE - Actually configure the policy for production
-        }
+            });
+        // }
+        // else
+        // {
+        // TODO: JE - Actually configure the policy for production
+        // }
 
         return services;
     }
