@@ -11,5 +11,9 @@ public class LedgerTransactionConfiguration : IEntityTypeConfiguration<LedgerTra
         builder
             .Property(l => l.CreatedOn)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        builder
+            .Property(l => l.Amount)
+            .HasPrecision(10, 2);
     }
 }
