@@ -1,8 +1,8 @@
 namespace RevrenLove.Ledger.Entities;
 
-public class LedgerTransaction
+public class LedgerTransaction: IEntity
 {
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; }
     public required Guid FinancialAccountId { get; set; }
     public required decimal Amount { get; set; }
     public string? Description { get; set; }

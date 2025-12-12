@@ -31,7 +31,8 @@ builder.Services
     })
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddRevrenLedgerSQLiteDbContext(connectionString);
+    .AddRevrenLedgerSQLiteDbContext(connectionString)
+    .AddLedgerServices();
 
 // builder.Services
 //     .AddIdentityApiEndpoints<LedgerUser>()
