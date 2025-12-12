@@ -1,0 +1,29 @@
+﻿@page "/financial-accounts"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using RevrenLove.Ledger.Api.Client
+@using RevrenLove.Ledger.Api.Models
+
+@inject ILedgerApiClient Client
+
+<PageTitle>Financial Accounts</PageTitle>
+
+<h1>Financial Accounts</h1>
+
+@code {
+    private FinancialAccounts[]? financialAccounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // financialAccounts = await Client.FinancialAccounts.GetAll();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching financial accounts data: {ex.Message}");
+        }
+    }
+}
