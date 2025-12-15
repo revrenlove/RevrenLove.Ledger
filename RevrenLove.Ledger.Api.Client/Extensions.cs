@@ -21,4 +21,10 @@ internal static class Extensions
     /// </exception>
     public static async Task<T?> GetFromJsonAsync<T>(this HttpClient httpClient, CancellationToken cancellationToken = default) =>
         await httpClient.GetFromJsonAsync<T>(string.Empty, cancellationToken);
+
+    public static async Task<HttpResponseMessage> GetAsync(this HttpClient httpClient, CancellationToken cancellationToken = default) =>
+        await httpClient.GetAsync(string.Empty, cancellationToken);
+
+    public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, T value, CancellationToken cancellationToken = default) =>
+        await httpClient.PostAsJsonAsync(string.Empty, value, cancellationToken);
 }

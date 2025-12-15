@@ -6,7 +6,8 @@ namespace RevrenLove.Ledger.Services;
 
 public interface IFinancialAccountsService : ILedgerServiceBase<FinancialAccount, Entities.FinancialAccount>
 {
-    Task<ICollection<FinancialAccount>> GetAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<FinancialAccount> GetAsync(Guid financialAccountId, CancellationToken cancellationToken = default);
+    Task<ICollection<FinancialAccount>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<FinancialAccount> CreateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken = default);
     Task<FinancialAccount> UpdateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
@@ -15,7 +16,10 @@ public interface IFinancialAccountsService : ILedgerServiceBase<FinancialAccount
 internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
     : LedgerServiceBase<FinancialAccount, Entities.FinancialAccount>(dbContext), IFinancialAccountsService
 {
-    async Task<ICollection<FinancialAccount>> IFinancialAccountsService.GetAsync(Guid userId, CancellationToken cancellationToken) =>
+    async Task<FinancialAccount> IFinancialAccountsService.GetAsync(Guid financialAccountId, CancellationToken cancellationToken) =>
+        await GetAsync(financialAccountId, cancellationToken);
+
+    async Task<ICollection<FinancialAccount>> IFinancialAccountsService.GetByUserAsync(Guid userId, CancellationToken cancellationToken) =>
         await GetAsync(fa => fa.Where(fa => fa.UserId == userId), cancellationToken);
 
     public async Task<FinancialAccount> CreateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken) =>

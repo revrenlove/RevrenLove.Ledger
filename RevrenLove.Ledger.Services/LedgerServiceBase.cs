@@ -15,7 +15,7 @@ public interface ILedgerServiceBase<TServiceModel, TEntityModel>
     //Task<TServiceModel> UpdateAsync(TServiceModel model, Action<TEntityModel>? configureEntity = null, CancellationToken cancellationToken = default);
 }
 
-internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQLiteDbContext dbContext) // : ILedgerServiceBase<TServiceModel, TEntityModel>
+internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQLiteDbContext dbContext)
     where TServiceModel : class
     where TEntityModel : class, IEntity
 {
@@ -41,7 +41,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
         if (cursor.HasValue)
         {
             var cursorEntity = await query.FirstOrDefaultAsync(e => e.Id == cursor.Value, cancellationToken);
-            
+
             if (cursorEntity == null)
             {
                 return [];
@@ -53,7 +53,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
         var entities = pageSize is not null
             ? await query.Take(pageSize.Value).ToListAsync(cancellationToken)
             : await query.ToListAsync(cancellationToken);
-        
+
         var models = entities.Select(ToServiceModel).ToList();
 
         return models;
@@ -136,6 +136,15 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
             .Set<TEntityModel>()
             .IgnoreQueryFilters();
 
-        return await query.SingleAsync(e => e.Id == id, cancellationToken);
+        try
+        {
+            return await query.SingleAsync(e => e.Id == id, cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            var message = $"Entity of type {typeof(TEntityModel).Name} with Id '{id}' was not found.";
+
+            throw new KeyNotFoundException(message, ex);
+        }
     }
 }
