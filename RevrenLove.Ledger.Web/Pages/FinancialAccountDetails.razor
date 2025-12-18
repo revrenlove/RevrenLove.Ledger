@@ -5,6 +5,7 @@
 
 @inject ILedgerApiClient Client
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 @if (financialAccount is null)
 {
@@ -23,6 +24,7 @@ else
         @if (!isEditing)
         {
             <button class="btn btn-link" @onclick="ToggleEdit" title="Edit">✏️</button>
+            <button class="btn btn-link" @onclick="Delete" title="Delete">🗑️</button>
         }
         else
         {
@@ -56,6 +58,8 @@ else
             else
             {
                 <textarea class="form-control" @bind="editModel.Description" placeholder="Description" rows="3"></textarea>
+                <label for="isBalanceExempt" class="form-label">Is Balance Exempt</label>
+                <InputCheckbox id="isBalanceExempt" class="form-check-input" @bind-Value="editModel.IsBalanceExempt" />
             }
         </div>
     </div>
@@ -95,6 +99,35 @@ else
 
         isEditing = true;
         editModel = financialAccount with { };
+    }
+
+    private async Task Delete()
+    {
+        if (financialAccount is null)
+        {
+            return;
+        }
+
+        // TODO: JE - better confirmation dialog
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", 
+            $"Are you sure you want to delete '{financialAccount.Name}'? This action cannot be undone.");
+        
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var result = await Client.FinancialAccounts.DeleteAsync(financialAccount.Id);
+
+        if (result.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/financial-accounts");
+        }
+        else
+        {
+            // TODO: JE - better error handling
+            errorMessage = "Unknown Error.";
+        }
     }
 
     private async Task SaveChanges()

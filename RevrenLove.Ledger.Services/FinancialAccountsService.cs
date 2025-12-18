@@ -40,7 +40,7 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
 
     public async Task<FinancialAccount> UpdateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken = default)
     {
-        await ValidateFriendlyId(financialAccount.FriendlyId, userId);
+        await ValidateFriendlyId(financialAccount.FriendlyId, userId, financialAccount.Id);
 
         return await
             UpdateAsync(
@@ -61,6 +61,7 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
         FriendlyId = entity.FriendlyId,
         Name = entity.Name,
         Description = entity.Description,
+        IsBalanceExempt = entity.IsBalanceExempt,
         IsActive = entity.IsActive,
     };
 
@@ -72,6 +73,7 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
             Name = model.Name,
             FriendlyId = model.FriendlyId,
             Description = model.Description,
+            IsBalanceExempt = model.IsBalanceExempt,
             IsActive = model.IsActive,
             UserId = default, // This will be set in the configureEntity action
         };
@@ -81,18 +83,20 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
         return entity;
     }
 
-    private async Task<bool> ValidateFriendlyId(string friendlyId, Guid userId)
+    private async Task ValidateFriendlyId(string friendlyId, Guid userId, Guid? excludeId = null)
     {
-        if (await dbContext.FinancialAccounts.AnyAsync(fa => fa.FriendlyId == friendlyId && fa.UserId == userId))
+        var query = dbContext.FinancialAccounts.Where(fa => fa.FriendlyId == friendlyId && fa.UserId == userId);
+
+        if (excludeId.HasValue)
+        {
+            query = query.Where(fa => fa.Id != excludeId.Value);
+        }
+
+        if (await query.AnyAsync(fa => fa.FriendlyId == friendlyId && fa.UserId == userId && fa.Id != excludeId))
         {
             var msg = $"A financial account with the friendly ID '{friendlyId}' already exists for the specified user.";
 
             throw new UniqueConstraintException(msg);
         }
-
-        return await
-            dbContext
-                .FinancialAccounts
-                .AnyAsync(fa => fa.FriendlyId == friendlyId && fa.UserId == userId);
     }
 }

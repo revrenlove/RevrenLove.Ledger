@@ -9,6 +9,7 @@ public static class MappingExtensions
             FriendlyId = serviceModel.FriendlyId,
             Name = serviceModel.Name,
             Description = serviceModel.Description,
+            IsBalanceExempt = serviceModel.IsBalanceExempt,
             IsActive = serviceModel.IsActive,
         };
 
@@ -19,6 +20,7 @@ public static class MappingExtensions
             FriendlyId = apiModel.FriendlyId,
             Name = apiModel.Name,
             Description = apiModel.Description,
+            IsBalanceExempt = apiModel.IsBalanceExempt,
             IsActive = apiModel.IsActive,
         };
 }

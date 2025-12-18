@@ -57,6 +57,12 @@
                 <InputTextArea id="accountDescription" class="form-control" @bind-Value="newAccount.Description" rows="3" />
                 <ValidationMessage For="@(() => newAccount.Description)" />
             </div>
+
+            <div class="mb-3">
+                <label for="isBalanceExempt" class="form-label">Is Balance Exempt</label>
+                <InputCheckbox id="isBalanceExempt" class="form-check-input" @bind-Value="newAccount.IsBalanceExempt" />
+                <ValidationMessage For="@(() => newAccount.IsBalanceExempt)" />
+            </div>
             
             <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
                 @if (isSubmitting)
@@ -142,14 +148,14 @@ else
         
         try
         {
-            var accountToCreate = new FinancialAccount
-            {
-                FriendlyId = newAccount.FriendlyId,
-                Name = newAccount.Name,
-                Description = newAccount.Description
-            };
+            // var accountToCreate = new FinancialAccount
+            // {
+            //     FriendlyId = newAccount.FriendlyId,
+            //     Name = newAccount.Name,
+            //     Description = newAccount.Description
+            // };
             
-            var result = await Client.FinancialAccounts.CreateAsync(accountToCreate);
+            var result = await Client.FinancialAccounts.CreateAsync(newAccount);
             
             if (result.IsSuccessStatusCode)
             {
