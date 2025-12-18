@@ -11,5 +11,17 @@ public class ProspectiveTransactionConfiguration : IEntityTypeConfiguration<Pros
         builder
             .Property(l => l.Amount)
             .HasPrecision(10, 2);
+
+        builder
+            .HasOne(pt => pt.FinancialAccount)
+            .WithMany(fa => fa.ProspectiveOutgoingTransactions)
+            .HasForeignKey(pt => pt.FinancialAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasOne(pt => pt.DestinationFinancialAccount)
+            .WithMany(fa => fa.ProspectiveIncomingTransactions)
+            .HasForeignKey(pt => pt.DestinationFinancialAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

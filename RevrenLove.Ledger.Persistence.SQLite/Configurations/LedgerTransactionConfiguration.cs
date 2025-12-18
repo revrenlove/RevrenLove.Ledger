@@ -11,5 +11,19 @@ public class LedgerTransactionConfiguration : IEntityTypeConfiguration<LedgerTra
         builder
             .Property(l => l.CreatedOn)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        builder
+            .Property(l => l.Amount)
+            .HasPrecision(10, 2);
+
+        builder
+            .HasOne(lt => lt.FinancialAccount)
+            .WithMany(fa => fa.LedgerTransactions)
+            .HasForeignKey(lt => lt.FinancialAccountId)
+            .IsRequired();
+
+        builder
+            .Navigation(lt => lt.FinancialAccount)
+            .IsRequired(false);
     }
 }

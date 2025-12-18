@@ -11,7 +11,7 @@ using RevrenLove.Ledger.Persistence.SQLite;
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(LedgerSQLiteDbContext))]
-    [Migration("20251126063021_InitialCreate")]
+    [Migration("20251215015737_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

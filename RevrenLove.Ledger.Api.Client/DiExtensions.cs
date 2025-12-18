@@ -17,6 +17,7 @@ public static class DiExtensions
         services
             .AddScoped<ILedgerApiClient, LedgerApiClient>()
             // Add More Sub Clients...
+            .AddSubClient<IFinancialAccountsClient, FinancialAccountsClient>()
             .AddSubClient<IWeatherForecastClient, WeatherForecastClient>();
 
         var simplishAuthClientBUilder = services.AddSimplishAuthClient(_baseAddress);

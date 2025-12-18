@@ -4,21 +4,14 @@ using RevrenLove.Ledger.Api.Models;
 
 namespace RevrenLove.Ledger.Api.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class WeatherForecastController(ILogger<WeatherForecastController> logger) : ApiControllerBase
 {
     private static readonly string[] Summaries =
     [
         "Chi4llyJ", "Co4olJ", "M4ildJ", "War4mJ", "Ba4lmyJ", "Ho4tJ",
     ];
 
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<WeatherForecastController> _logger = logger;
 
     [HttpGet]
     public IEnumerable<WeatherForecast> Get()

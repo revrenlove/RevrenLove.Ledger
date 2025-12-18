@@ -1,0 +1,159 @@
+﻿@page "/financial-accounts/{financialAccountId:guid}"
+
+@using RevrenLove.Ledger.Api.Client
+@using RevrenLove.Ledger.Api.Models
+
+@inject ILedgerApiClient Client
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@if (financialAccount is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(errorMessage) && isEditing)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+    <h1>
+        Financial Account Details
+        @if (!isEditing)
+        {
+            <button class="btn btn-link" @onclick="ToggleEdit" title="Edit">✏️</button>
+            <button class="btn btn-link" @onclick="Delete" title="Delete">🗑️</button>
+        }
+        else
+        {
+            <button class="btn btn-success btn-sm" @onclick="SaveChanges" title="Save">Save</button>
+            <button class="btn btn-secondary btn-sm" @onclick="ClearEdit" title="Cancel">Cancel</button>
+        }
+    </h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            @if (!isEditing)
+            {
+                <h3>@financialAccount.FriendlyId - @financialAccount.Name</h3>
+            }
+            else
+            {
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <input type="text" class="form-control" @bind="editModel.FriendlyId" placeholder="Friendly ID" />
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" @bind="editModel.Name" placeholder="Name" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-body">
+            @if (!isEditing)
+            {
+                <p>@financialAccount.Description</p>
+            }
+            else
+            {
+                <textarea class="form-control" @bind="editModel.Description" placeholder="Description" rows="3"></textarea>
+                <label for="isBalanceExempt" class="form-label">Is Balance Exempt</label>
+                <InputCheckbox id="isBalanceExempt" class="form-check-input" @bind-Value="editModel.IsBalanceExempt" />
+            }
+        </div>
+    </div>
+}
+
+<h3></h3>
+
+@code {
+    [Parameter]
+    public Guid FinancialAccountId { get; set; }
+
+    private FinancialAccount? financialAccount;
+    private FinancialAccount editModel = new();
+    private bool isEditing = false;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Client.FinancialAccounts.GetAsync(FinancialAccountId);
+
+        if (result.IsSuccessStatusCode)
+        {
+            financialAccount = result.Value;
+        }
+        else if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            NavigationManager.NavigateTo("/financial-accounts");
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        if (financialAccount is null)
+        {
+            return;
+        }
+
+        isEditing = true;
+        editModel = financialAccount with { };
+    }
+
+    private async Task Delete()
+    {
+        if (financialAccount is null)
+        {
+            return;
+        }
+
+        // TODO: JE - better confirmation dialog
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", 
+            $"Are you sure you want to delete '{financialAccount.Name}'? This action cannot be undone.");
+        
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var result = await Client.FinancialAccounts.DeleteAsync(financialAccount.Id);
+
+        if (result.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/financial-accounts");
+        }
+        else
+        {
+            // TODO: JE - better error handling
+            errorMessage = "Unknown Error.";
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        if (financialAccount is null)
+        {
+            return;
+        }
+
+        var result = await Client.FinancialAccounts.UpdateAsync(editModel);
+
+        if (result.IsSuccessStatusCode)
+        {
+            financialAccount = result.Value;
+            ClearEdit();
+        }
+        else
+        {
+            errorMessage = result.RawContent;
+        }
+    }
+
+    private void ClearEdit()
+    {
+        isEditing = false;
+        editModel = new();
+        errorMessage = null;
+    }
+}
