@@ -4,17 +4,6 @@ using RevrenLove.Ledger.Persistence.SQLite;
 
 namespace RevrenLove.Ledger.Services;
 
-public interface ILedgerServiceBase<TServiceModel, TEntityModel>
-    where TServiceModel : class
-    where TEntityModel : class, IEntity
-{
-    //Task<TServiceModel> CreateAsync(TServiceModel model, Action<TEntityModel>? configureEntity = null, CancellationToken cancellationToken = default);
-    //Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-    //Task<TServiceModel> GetAsync(Guid id, CancellationToken cancellationToken = default);
-    //Task<ICollection<TServiceModel>> GetAsync(Guid? cursor, int pageSize, Func<IQueryable<TEntityModel>, IQueryable<TEntityModel>> configureQuery, CancellationToken cancellationToken = default);
-    //Task<TServiceModel> UpdateAsync(TServiceModel model, Action<TEntityModel>? configureEntity = null, CancellationToken cancellationToken = default);
-}
-
 internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQLiteDbContext dbContext)
     where TServiceModel : class
     where TEntityModel : class, IEntity

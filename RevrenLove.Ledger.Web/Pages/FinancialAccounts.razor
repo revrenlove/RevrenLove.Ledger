@@ -5,6 +5,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using RevrenLove.Ledger.Api.Client
 @using RevrenLove.Ledger.Api.Models
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
 
 @inject ILedgerApiClient Client
 
@@ -12,18 +14,162 @@
 
 <h1>Financial Accounts</h1>
 
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Create New Account</h3>
+    </div>
+    <div class="card-body">
+        <EditForm Model="@newAccount" OnValidSubmit="@HandleCreateAccount">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    @successMessage
+                </div>
+            }
+
+            @*
+                TODO: JE - Add auto-check for existing FriendlyId values
+            *@
+            <div class="mb-3">
+                <label for="friendlyId" class="form-label">Friendly Id</label>
+                <InputText id="friendlyId" class="form-control" @bind-Value="newAccount.FriendlyId" />
+                <ValidationMessage For="@(() => newAccount.FriendlyId)" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="accountName" class="form-label">Account Name</label>
+                <InputText id="accountName" class="form-control" @bind-Value="newAccount.Name" />
+                <ValidationMessage For="@(() => newAccount.Name)" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="accountDescription" class="form-label">Description (Optional)</label>
+                <InputTextArea id="accountDescription" class="form-control" @bind-Value="newAccount.Description" rows="3" />
+                <ValidationMessage For="@(() => newAccount.Description)" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Creating...</span>
+                }
+                else
+                {
+                    <span>Create Account</span>
+                }
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@if (financialAccounts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (financialAccounts.Length == 0)
+{
+    <p>No financial accounts found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Account Name</th>
+                <th>Account Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in financialAccounts)
+            {
+                <tr>
+                    <td><a href="/financial-accounts/@account.Id">@account.Name</a></td>
+                    <td>@account.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    private FinancialAccounts[]? financialAccounts;
+    private FinancialAccount[]? financialAccounts;
+    private FinancialAccount newAccount = new();
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadFinancialAccountsAsync();
+    }
+
+    private async Task LoadFinancialAccountsAsync()
+    {
         try
         {
-            // financialAccounts = await Client.FinancialAccounts.GetAll();
+            Console.WriteLine("Fetching financial accounts data...");
+
+            var result = await Client.FinancialAccounts.GetAsync();
+
+            Console.WriteLine("Request complete...");
+
+            financialAccounts = result.Value!.ToArray();
+
+            Console.WriteLine(JsonSerializer.Serialize(financialAccounts, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error fetching financial accounts data: {ex.Message}");
+            Console.Error.WriteLine($"Shit fucked up fetching financial accounts data: {ex.Message}");
+        }
+    }
+
+    private async Task HandleCreateAccount()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+        successMessage = null;
+        
+        try
+        {
+            var accountToCreate = new FinancialAccount
+            {
+                FriendlyId = newAccount.FriendlyId,
+                Name = newAccount.Name,
+                Description = newAccount.Description
+            };
+            
+            var result = await Client.FinancialAccounts.CreateAsync(accountToCreate);
+            
+            if (result.IsSuccessStatusCode)
+            {
+                successMessage = $"Account '{newAccount.FriendlyId} - {newAccount.Name}' created successfully!";
+                newAccount = new();
+                await LoadFinancialAccountsAsync();
+            }
+            else
+            {
+                errorMessage = $"Failed to create account: {result.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating account: {ex.Message}";
+            Console.Error.WriteLine($"Error creating financial account: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
         }
     }
 }

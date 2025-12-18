@@ -1,6 +1,6 @@
 namespace RevrenLove.Ledger.Api.Models;
 
-public class WeatherForecast
+public record WeatherForecast
 {
     public DateOnly Date { get; set; }
 

@@ -1,12 +1,19 @@
 ﻿using System.Net;
-using System.Net.Http.Json;
-using RevrenLove.SimplishAuth.Client;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RevrenLove.Ledger.Api.Client;
 
 public class ApiClientResult<T> : ApiClientResult
 {
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
     public T? Value { get; private set; }
+    public string? RawContent { get; private set; }
 
     private ApiClientResult(HttpResponseMessage httpResponse)
         : base(httpResponse) { }
@@ -15,20 +22,14 @@ public class ApiClientResult<T> : ApiClientResult
     {
         var result = new ApiClientResult<T>(httpResponse);
 
-        if (result.IsSuccessStatusCode)
+        result.RawContent = await httpResponse.Content.ReadAsStringAsync();
+
+        if (!result.IsSuccessStatusCode)
         {
             return result;
         }
 
-        try
-        {
-            result.Value = await result.HttpResponse.Content.ReadFromJsonAsync<T>();
-        }
-        catch
-        {
-            // TODO: Do something better here...
-            throw;
-        }
+        result.Value = JsonSerializer.Deserialize<T>(result.RawContent, _jsonSerializerOptions);
 
         return result;
     }
@@ -39,8 +40,8 @@ public class ApiClientResult
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;
     public bool IsSuccessStatusCode => HttpResponse.IsSuccessStatusCode;
     public string? ReasonPhrase => HttpResponse.ReasonPhrase;
-    public HttpValidationProblemDetails? HttpValidationProblemDetails { get; internal set; }
 
+    // TODO: JE - Parse the error or some shit...
     protected HttpResponseMessage HttpResponse { get; }
 
     protected ApiClientResult(HttpResponseMessage httpResponse) => HttpResponse = httpResponse;

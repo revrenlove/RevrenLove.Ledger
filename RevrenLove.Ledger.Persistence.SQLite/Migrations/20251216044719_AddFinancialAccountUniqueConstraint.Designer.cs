@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RevrenLove.Ledger.Persistence.SQLite;
 
@@ -10,9 +11,11 @@ using RevrenLove.Ledger.Persistence.SQLite;
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(LedgerSQLiteDbContext))]
-    partial class LedgerSQLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251216044719_AddFinancialAccountUniqueConstraint")]
+    partial class AddFinancialAccountUniqueConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -152,14 +155,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FriendlyId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsBalanceExempt")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -171,7 +167,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "FriendlyId")
+                    b.HasIndex("UserId", "Name")
                         .IsUnique();
 
                     b.ToTable("FinancialAccounts");
@@ -187,15 +183,12 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CorrelationId")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<DateOnly>("DatePosted")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -286,15 +279,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly>("DateEffective")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("DestinationFinancialAccountId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("FinancialAccountId")
                         .HasColumnType("TEXT");
 
@@ -302,8 +286,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DestinationFinancialAccountId");
 
                     b.HasIndex("FinancialAccountId");
 
@@ -320,12 +302,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("DestinationFinancialAccountId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("FinancialAccountId")
                         .HasColumnType("TEXT");
 
@@ -339,8 +315,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DestinationFinancialAccountId");
 
                     b.HasIndex("FinancialAccountId");
 
@@ -413,45 +387,31 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
                         .WithMany("LedgerTransactions")
-                        .HasForeignKey("FinancialAccountId");
+                        .HasForeignKey("FinancialAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("FinancialAccount");
                 });
 
             modelBuilder.Entity("RevrenLove.Ledger.Entities.ProspectiveTransaction", b =>
                 {
-                    b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "DestinationFinancialAccount")
-                        .WithMany("ProspectiveIncomingTransactions")
-                        .HasForeignKey("DestinationFinancialAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany("ProspectiveOutgoingTransactions")
+                        .WithMany("ProspectiveTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("DestinationFinancialAccount");
 
                     b.Navigation("FinancialAccount");
                 });
 
             modelBuilder.Entity("RevrenLove.Ledger.Entities.RecurringTransaction", b =>
                 {
-                    b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "DestinationFinancialAccount")
-                        .WithMany("RecurringIncomingTransactionsTransactions")
-                        .HasForeignKey("DestinationFinancialAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany("RecurringOurgoingTransactionsTransactions")
+                        .WithMany("RecurringTransactions")
                         .HasForeignKey("FinancialAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("DestinationFinancialAccount");
 
                     b.Navigation("FinancialAccount");
                 });
@@ -460,13 +420,9 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 {
                     b.Navigation("LedgerTransactions");
 
-                    b.Navigation("ProspectiveIncomingTransactions");
+                    b.Navigation("ProspectiveTransactions");
 
-                    b.Navigation("ProspectiveOutgoingTransactions");
-
-                    b.Navigation("RecurringIncomingTransactionsTransactions");
-
-                    b.Navigation("RecurringOurgoingTransactionsTransactions");
+                    b.Navigation("RecurringTransactions");
                 });
 #pragma warning restore 612, 618
         }

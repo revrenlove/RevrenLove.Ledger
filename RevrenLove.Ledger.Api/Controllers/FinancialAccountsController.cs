@@ -43,18 +43,17 @@ public class FinancialAccountsController(
 
         var createdAccount = await financialAccountsService.CreateAsync(userId, request.ToServiceModel());
         
-        return CreatedAtAction(
-            nameof(GetByIdAsync),
-            new { accountId = createdAccount.Id },
-            createdAccount.ToApiModel());
+        return Created(Url.Content($"~/api/FinancialAccounts/{createdAccount.Id}")!, createdAccount.ToApiModel());
     }
 
     [HttpPut("{accountId:guid}")]
     public async Task<ActionResult<FinancialAccount>> UpdateAsync(Guid accountId, FinancialAccount request)
     {
+        var userId = GetUserId();
+
         try
         {
-            var updatedAccount = await financialAccountsService.UpdateAsync(accountId, request.ToServiceModel());
+            var updatedAccount = await financialAccountsService.UpdateAsync(userId, request.ToServiceModel());
 
             return Ok(updatedAccount.ToApiModel());
         }

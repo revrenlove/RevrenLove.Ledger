@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RevrenLove.Ledger.Persistence.SQLite;
 
@@ -10,9 +11,11 @@ using RevrenLove.Ledger.Persistence.SQLite;
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(LedgerSQLiteDbContext))]
-    partial class LedgerSQLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251218030939_UpdatingRelationships")]
+    partial class UpdatingRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -413,7 +416,9 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
                         .WithMany("LedgerTransactions")
-                        .HasForeignKey("FinancialAccountId");
+                        .HasForeignKey("FinancialAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("FinancialAccount");
                 });
