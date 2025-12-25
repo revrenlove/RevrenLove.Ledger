@@ -22,6 +22,7 @@ public class ProspectiveTransactionConfiguration : IEntityTypeConfiguration<Pros
             .HasOne(pt => pt.DestinationFinancialAccount)
             .WithMany(fa => fa.ProspectiveIncomingTransactions)
             .HasForeignKey(pt => pt.DestinationFinancialAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
     }
 }

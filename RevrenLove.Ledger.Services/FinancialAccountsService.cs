@@ -11,6 +11,7 @@ public interface IFinancialAccountsService
     Task<FinancialAccount> CreateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken = default);
     Task<FinancialAccount> UpdateAsync(Guid userId, FinancialAccount financialAccount, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<decimal> GetBalanceAsync(Guid financialAccountId, CancellationToken cancellationToken = default);
 }
 
 internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
@@ -55,6 +56,13 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
     async Task IFinancialAccountsService.DeleteAsync(Guid id, CancellationToken cancellationToken) =>
         await DeleteAsync(id, cancellationToken);
 
+    public async Task<decimal> GetBalanceAsync(Guid financialAccountId, CancellationToken cancellationToken = default) =>
+        await
+            dbContext
+                .LedgerTransactions
+                .Where(lt => lt.FinancialAccountId == financialAccountId)
+                .SumAsync(lt => lt.Amount, cancellationToken);
+
     protected override FinancialAccount ToServiceModel(Entities.FinancialAccount entity) => new()
     {
         Id = entity.Id,
@@ -75,7 +83,9 @@ internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext)
             Description = model.Description,
             IsBalanceExempt = model.IsBalanceExempt,
             IsActive = model.IsActive,
-            UserId = default, // This will be set in the configureEntity action
+
+            // This will be set in the configureEntity action
+            UserId = default,
         };
 
         configureEntity?.Invoke(entity);

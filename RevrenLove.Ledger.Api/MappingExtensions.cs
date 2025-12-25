@@ -23,4 +23,26 @@ public static class MappingExtensions
             IsBalanceExempt = apiModel.IsBalanceExempt,
             IsActive = apiModel.IsActive,
         };
+
+    public static Models.LedgerTransaction ToApiModel(this Services.Models.LedgerTransaction serviceModel) =>
+        new()
+        {
+            Id = serviceModel.Id,
+            FinancialAccountId = serviceModel.FinancialAccountId,
+            Amount = serviceModel.Amount,
+            Description = serviceModel.Description,
+            DatePosted = serviceModel.DatePosted,
+            CorrelationId = serviceModel.CorrelationId
+        };
+
+    public static Services.Models.LedgerTransaction ToServiceModel(this Models.LedgerTransaction apiModel) =>   
+        new()
+        {
+            Id = apiModel.Id,
+            FinancialAccountId = apiModel.FinancialAccountId,
+            Amount = apiModel.Amount,
+            Description = apiModel.Description,
+            DatePosted = apiModel.DatePosted,
+            CorrelationId = apiModel.CorrelationId
+        };
 }

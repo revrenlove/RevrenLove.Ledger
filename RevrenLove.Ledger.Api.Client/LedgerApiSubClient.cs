@@ -68,4 +68,6 @@ internal abstract class LedgerApiSubClient<T>(HttpClient httpClient) : ILedgerAp
 
         return result;
     }
+
+    protected HttpClient HttpClient => httpClient;
 }
