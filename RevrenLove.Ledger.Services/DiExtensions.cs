@@ -8,5 +8,6 @@ public static class DiExtensions
 {
     public static IServiceCollection AddLedgerServices(this IServiceCollection services) =>
         services
-            .AddScoped<IFinancialAccountsService, FinancialAccountsService>();
+            .AddScoped<IFinancialAccountsService, FinancialAccountsService>()
+            .AddScoped<ILedgerTransactionService, LedgerTransactionService>();
 }

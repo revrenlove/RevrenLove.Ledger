@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RevrenLove.Ledger.Persistence.SQLite;
 
@@ -10,9 +11,11 @@ using RevrenLove.Ledger.Persistence.SQLite;
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(LedgerSQLiteDbContext))]
-    partial class LedgerSQLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251218062614_MakeCorrelationIdNullable")]
+    partial class MakeCorrelationIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -292,7 +295,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DestinationFinancialAccountId")
+                    b.Property<Guid>("DestinationFinancialAccountId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("FinancialAccountId")
@@ -423,7 +426,8 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "DestinationFinancialAccount")
                         .WithMany("ProspectiveIncomingTransactions")
                         .HasForeignKey("DestinationFinancialAccountId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
                         .WithMany("ProspectiveOutgoingTransactions")

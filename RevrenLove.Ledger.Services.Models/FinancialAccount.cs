@@ -1,6 +1,6 @@
 ﻿namespace RevrenLove.Ledger.Services.Models;
 
-public class FinancialAccount
+public record FinancialAccount
 {
     public Guid Id { get; set; }
     public required string FriendlyId { get; set; }

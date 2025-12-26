@@ -8,7 +8,7 @@ public class LedgerTransaction : IEntity
     public string? Description { get; set; }
     public required DateOnly DatePosted { get; set; }
     public required DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-    public required Guid CorrelationId { get; set; }
+    public Guid CorrelationId { get; set; }
 
     public FinancialAccount? FinancialAccount { get; set; }
 }
