@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using RevrenLove.Ledger.Api;
 using RevrenLove.Ledger.Entities;
 using RevrenLove.Ledger.Persistence.SQLite;
 
@@ -32,7 +33,8 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddRevrenLedgerSQLiteDbContext(connectionString)
-    .AddLedgerServices();
+    .AddLedgerServices()
+    .AddSingleton<Mapper>();
 
 // builder.Services
 //     .AddIdentityApiEndpoints<LedgerUser>()
@@ -40,7 +42,8 @@ builder.Services
 //     .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
 
 // Add identity and opt-in to endpoints
-builder.Services.AddIdentityCore<LedgerUser>()
+builder.Services
+    .AddIdentityCore<LedgerUser>()
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<LedgerSQLiteDbContext>()
     .AddApiEndpoints();
