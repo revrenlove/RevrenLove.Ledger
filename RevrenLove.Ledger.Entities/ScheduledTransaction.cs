@@ -1,6 +1,6 @@
 namespace RevrenLove.Ledger.Entities;
 
-public class ProspectiveTransaction : IEntity, IActivable
+public class ScheduledTransaction : IEntity, IActivable
 {
     public Guid Id { get; set; }
     public required Guid FinancialAccountId { get; set; }

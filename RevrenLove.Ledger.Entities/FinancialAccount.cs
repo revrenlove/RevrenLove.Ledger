@@ -19,6 +19,6 @@ public class FinancialAccount : IEntity, IActivable
     public ICollection<LedgerTransaction> LedgerTransactions { get; } = new HashSet<LedgerTransaction>();
     public ICollection<RecurringTransaction> RecurringIncomingTransactionsTransactions { get; } = new HashSet<RecurringTransaction>();
     public ICollection<RecurringTransaction> RecurringOutgoingTransactionsTransactions { get; } = new HashSet<RecurringTransaction>();
-    public ICollection<ProspectiveTransaction> ProspectiveIncomingTransactions { get; } = new HashSet<ProspectiveTransaction>();
-    public ICollection<ProspectiveTransaction> ProspectiveOutgoingTransactions { get; } = new HashSet<ProspectiveTransaction>();
+    public ICollection<ScheduledTransaction> ScheduledIncomingTransactions { get; } = new HashSet<ScheduledTransaction>();
+    public ICollection<ScheduledTransaction> ScheduledOutgoingTransactions { get; } = new HashSet<ScheduledTransaction>();
 }

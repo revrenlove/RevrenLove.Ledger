@@ -11,7 +11,7 @@ public class LedgerSQLiteDbContext(DbContextOptions<LedgerSQLiteDbContext> optio
 {
     public DbSet<FinancialAccount> FinancialAccounts { get; set; }
     public DbSet<LedgerTransaction> LedgerTransactions { get; set; }
-    public DbSet<ProspectiveTransaction> ProspectiveTransactions { get; set; }
+    public DbSet<ScheduledTransaction> ScheduledTransactions { get; set; }
     public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

@@ -4,9 +4,9 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
 
-public class ProspectiveTransactionConfiguration : IEntityTypeConfiguration<ProspectiveTransaction>
+public class ScheduledTransactionConfiguration : IEntityTypeConfiguration<ScheduledTransaction>
 {
-    public void Configure(EntityTypeBuilder<ProspectiveTransaction> builder)
+    public void Configure(EntityTypeBuilder<ScheduledTransaction> builder)
     {
         builder
             .Property(l => l.Amount)
@@ -14,13 +14,13 @@ public class ProspectiveTransactionConfiguration : IEntityTypeConfiguration<Pros
 
         builder
             .HasOne(pt => pt.FinancialAccount)
-            .WithMany(fa => fa.ProspectiveOutgoingTransactions)
+            .WithMany(fa => fa.ScheduledOutgoingTransactions)
             .HasForeignKey(pt => pt.FinancialAccountId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne(pt => pt.DestinationFinancialAccount)
-            .WithMany(fa => fa.ProspectiveIncomingTransactions)
+            .WithMany(fa => fa.ScheduledIncomingTransactions)
             .HasForeignKey(pt => pt.DestinationFinancialAccountId)
             .OnDelete(DeleteBehavior.NoAction)
             .IsRequired(false);
