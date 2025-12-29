@@ -7,6 +7,7 @@ namespace RevrenLove.Ledger.Api.Controllers;
 
 public class FinancialAccountsController(
     IFinancialAccountsService financialAccountsService,
+    Mapper mapper,
     UserManager<Entities.LedgerUser> userManager) : SecureApiControllerBase
 {
     [HttpGet]
@@ -16,7 +17,7 @@ public class FinancialAccountsController(
 
         var accounts = await financialAccountsService.GetByUserAsync(userId);
 
-        var apiAccounts = accounts.Select(x => x.ToApiModel());
+        var apiAccounts = accounts.Select(mapper.ToApiModel);
 
         return Ok(apiAccounts);
     }
@@ -28,7 +29,7 @@ public class FinancialAccountsController(
         {
             var account = await financialAccountsService.GetAsync(accountId);
 
-            return Ok(account.ToApiModel());
+            return Ok(mapper.ToApiModel(account));
         }
         catch (KeyNotFoundException)
         {
@@ -41,9 +42,9 @@ public class FinancialAccountsController(
     {
         var userId = GetUserId();
 
-        var createdAccount = await financialAccountsService.CreateAsync(userId, request.ToServiceModel());
+        var createdAccount = await financialAccountsService.CreateAsync(userId, mapper.ToServiceModel(request));
         
-        return Created(Url.Content($"~/api/FinancialAccounts/{createdAccount.Id}")!, createdAccount.ToApiModel());
+        return Created(Url.Content($"~/api/FinancialAccounts/{createdAccount.Id}")!, mapper.ToApiModel(createdAccount));
     }
 
     [HttpPut("{accountId:guid}")]
@@ -53,9 +54,9 @@ public class FinancialAccountsController(
 
         try
         {
-            var updatedAccount = await financialAccountsService.UpdateAsync(userId, request.ToServiceModel());
+            var updatedAccount = await financialAccountsService.UpdateAsync(userId, mapper.ToServiceModel(request));
 
-            return Ok(updatedAccount.ToApiModel());
+            return Ok(mapper.ToApiModel(updatedAccount));
         }
         catch (KeyNotFoundException)
         {

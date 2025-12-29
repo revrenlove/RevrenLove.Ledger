@@ -4,7 +4,9 @@ using RevrenLove.Ledger.Services;
 
 namespace RevrenLove.Ledger.Api.Controllers;
 
-public class LedgerTransactionsController(ILedgerTransactionService ledgerTransactionService)
+public class LedgerTransactionsController(
+    ILedgerTransactionService ledgerTransactionService,
+    Mapper mapper)
     : SecureApiControllerBase
 {
     [HttpGet("{transactionId:guid}")]
@@ -14,7 +16,7 @@ public class LedgerTransactionsController(ILedgerTransactionService ledgerTransa
         {
             var transaction = await ledgerTransactionService.GetAsync(transactionId);
 
-            return Ok(transaction.ToApiModel());
+            return Ok(mapper.ToApiModel(transaction));
         }
         catch (KeyNotFoundException)
         {
@@ -26,19 +28,19 @@ public class LedgerTransactionsController(ILedgerTransactionService ledgerTransa
     public async Task<ActionResult<IEnumerable<LedgerTransaction>>> GetByFinancialAccountIdAsync([FromQuery] Guid financialAccountId)
     {
         var transactions = await ledgerTransactionService.GetByFinancialAccountIdAsync(financialAccountId);
-        return Ok(transactions.Select(t => t.ToApiModel()));
+        return Ok(transactions.Select(mapper.ToApiModel));
     }
 
     [HttpPost]
     public async Task<ActionResult<LedgerTransaction>> CreateAsync(LedgerTransaction request)
     {
-        var serviceModel = request.ToServiceModel();
+        var serviceModel = mapper.ToServiceModel(request);
 
         var createdTransaction = await ledgerTransactionService.CreateAsync(serviceModel);
 
         var uri = Url.Content($"~/api/LedgerTransactions/{createdTransaction.Id}")!;
 
-        var apiModel = createdTransaction.ToApiModel();
+        var apiModel = mapper.ToApiModel(createdTransaction);
 
         return Created(uri, apiModel);
     }
