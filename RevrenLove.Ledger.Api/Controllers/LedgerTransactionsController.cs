@@ -1,47 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RevrenLove.Ledger.Api.Models;
-using RevrenLove.Ledger.Services;
+﻿// TODO: JE - Delete this
 
-namespace RevrenLove.Ledger.Api.Controllers;
+//using Microsoft.AspNetCore.Mvc;
+//using RevrenLove.Ledger.Api.Models;
+//using RevrenLove.Ledger.Services;
 
-public class LedgerTransactionsController(
-    ILedgerTransactionService ledgerTransactionService,
-    Mapper mapper)
-    : SecureApiControllerBase
-{
-    [HttpGet("{transactionId:guid}")]
-    public async Task<ActionResult<LedgerTransaction>> GetAsync(Guid transactionId)
-    {
-        try
-        {
-            var transaction = await ledgerTransactionService.GetAsync(transactionId);
+//namespace RevrenLove.Ledger.Api.Controllers;
 
-            return Ok(mapper.ToApiModel(transaction));
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-    }
+//public class LedgerTransactionsController(
+//    ILedgerTransactionService ledgerTransactionService,
+//    Mapper mapper)
+//    : SecureApiControllerBase
+//{
+//    [HttpGet("{transactionId:guid}")]
+//    public async Task<ActionResult<LedgerTransaction>> GetAsync(Guid transactionId)
+//    {
+//        try
+//        {
+//            var transaction = await ledgerTransactionService.GetAsync(transactionId);
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<LedgerTransaction>>> GetByFinancialAccountIdAsync([FromQuery] Guid financialAccountId)
-    {
-        var transactions = await ledgerTransactionService.GetByFinancialAccountIdAsync(financialAccountId);
-        return Ok(transactions.Select(mapper.ToApiModel));
-    }
+//            return Ok(mapper.ToApiModel(transaction));
+//        }
+//        catch (KeyNotFoundException)
+//        {
+//            return NotFound();
+//        }
+//    }
 
-    [HttpPost]
-    public async Task<ActionResult<LedgerTransaction>> CreateAsync(LedgerTransaction request)
-    {
-        var serviceModel = mapper.ToServiceModel(request);
+//    [HttpGet]
+//    public async Task<ActionResult<IEnumerable<LedgerTransaction>>> GetByFinancialAccountIdAsync([FromQuery] Guid financialAccountId)
+//    {
+//        var transactions = await ledgerTransactionService.GetByFinancialAccountIdAsync(financialAccountId);
+//        return Ok(transactions.Select(mapper.ToApiModel));
+//    }
 
-        var createdTransaction = await ledgerTransactionService.CreateAsync(serviceModel);
+//    [HttpPost]
+//    public async Task<ActionResult<LedgerTransaction>> CreateAsync(LedgerTransaction request)
+//    {
+//        var serviceModel = mapper.ToServiceModel(request);
 
-        var uri = Url.Content($"~/api/LedgerTransactions/{createdTransaction.Id}")!;
+//        var createdTransaction = await ledgerTransactionService.CreateAsync(serviceModel);
 
-        var apiModel = mapper.ToApiModel(createdTransaction);
+//        var uri = Url.Content($"~/api/LedgerTransactions/{createdTransaction.Id}")!;
 
-        return Created(uri, apiModel);
-    }
-}
+//        var apiModel = mapper.ToApiModel(createdTransaction);
+
+//        return Created(uri, apiModel);
+//    }
+//}

@@ -90,13 +90,24 @@ else
                 <div class="row g-2">
                     <div class="col-md-3">
                         <label for="datePosted" class="form-label">Date</label>
-                        <InputDate id="datePosted" class="form-control" @bind-Value="newTransaction.DatePosted" aria-required="true" aria-describedby="datePosted-validation" />
-                        <ValidationMessage For="@(() => newTransaction.DatePosted)" id="datePosted-validation" />
+                        <InputDate id="datePosted" class="form-control" @bind-Value="newTransaction.Date" aria-required="true" aria-describedby="datePosted-validation" />
+                        <ValidationMessage For="@(() => newTransaction.Date)" id="datePosted-validation" />
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label for="description" class="form-label">Description</label>
                         <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" placeholder="Transaction description" aria-describedby="description-validation" />
                         <ValidationMessage For="@(() => newTransaction.Description)" id="description-validation" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="destinationAccount" class="form-label">Destination Account</label>
+                        <InputSelect id="destinationAccount" class="form-control" @bind-Value="newTransaction.DestinationFinancialAccountId">
+                            <option value="">-- None --</option>
+                            @foreach (var account in allAccounts.Where(a => a.Id != financialAccount!.Id))
+                            {
+                                <option value="@account.Id">@account.FriendlyId - @account.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => newTransaction.DestinationFinancialAccountId)" id="destinationAccount-validation" />
                     </div>
                     <div class="col-md-2">
                         <label for="amount" class="form-label">Amount</label>
@@ -145,13 +156,13 @@ else
 
     private FinancialAccount? financialAccount;
     private LedgerTransaction[] ledgerTransactions = [];
-
+    private FinancialAccount[] allAccounts = [];
 
     private FinancialAccount editModel = new();
-    private LedgerTransaction newTransaction = new()
+    private AddTransactionModel newTransaction = new()
     {
         Amount = 0,
-        DatePosted = DateOnly.FromDateTime(DateTime.Now),
+        Date = DateOnly.FromDateTime(DateTime.Now),
     };
     private bool isEditing = false;
     private string? errorMessage;
@@ -160,6 +171,7 @@ else
     {
         await LoadFinancialAccountDetails();
         await LoadLedgerTransactions();
+        await LoadAllAccounts();
     }
 
     private async Task LoadFinancialAccountDetails()
@@ -187,6 +199,23 @@ else
         if (result.IsSuccessStatusCode)
         {
             ledgerTransactions = result.Value!.ToArray();
+        }
+        else
+        {
+            // TODO: JE - handle errors
+        }
+    }
+
+    private async Task LoadAllAccounts()
+    {
+        var result = await Client.FinancialAccounts.GetAsync();
+        if (result.IsSuccessStatusCode)
+        {
+            allAccounts = result.Value!.ToArray();
+        }
+        else
+        {
+            // TODO: JE - handle errors
         }
     }
 
@@ -266,21 +295,21 @@ else
 
         newTransaction.FinancialAccountId = financialAccount.Id;
 
-        var result = await Client.LedgerTransactions.CreateAsync(newTransaction);
+        // var result = await Client.LedgerTransactions.CreateAsync(newTransaction);
 
-        if (result.IsSuccessStatusCode)
-        {
-            newTransaction = new()
-            {
-                Amount = 0,
-                DatePosted = DateOnly.FromDateTime(DateTime.Now),
-            };
-            await LoadLedgerTransactions();
-        }
-        else
-        {
-            // TODO: JE - handle error
-            errorMessage = result.RawContent;
-        }
+        // if (result.IsSuccessStatusCode)
+        // {
+        //     newTransaction = new()
+        //     {
+        //         Amount = 0,
+        //         DatePosted = DateOnly.FromDateTime(DateTime.Now),
+        //     };
+        //     await LoadLedgerTransactions();
+        // }
+        // else
+        // {
+        //     // TODO: JE - handle error
+        //     errorMessage = result.RawContent;
+        // }
     }
 }
