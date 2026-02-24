@@ -7,13 +7,23 @@ namespace RevrenLove.Ledger.Services;
 public interface IFinancialTransactionService
 {
     Task<FinancialTransaction> GetAsync(Guid transactionId, CancellationToken cancellationToken = default);
+
     // TODO: JE - Make the `pageSize` not be magic
     // TODO: JE - Implement filters
-    Task<IEnumerable<FinancialTransaction>> GetAsync(FinancialTransactionStatus status, Guid? cursor = null, int pageSize = 25, CancellationToken cancellationToken = default);
+    //Task<IEnumerable<FinancialTransaction>> GetAsync(FinancialTransactionStatus status, Guid? cursor = null, int pageSize = 25, CancellationToken cancellationToken = default);
+
+    // TODO: JE - THIS IS TEMPORARY!!!
+    [Obsolete("This method is temporary and will be removed in a future version.")]
+    Task<IEnumerable<FinancialTransaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    
+    // TODO: JE - Consider whether we want to have separate methods for creating transactions with vs. without associations, or if we want to have a single method that can handle both scenarios (e.g. by making the `associatedFinancialAccountId` parameter optional and handling the logic accordingly).
     Task<FinancialTransaction> CreateAsync(FinancialTransaction transaction, Guid? associatedFinancialAccountId, CancellationToken cancellationToken = default);
+    
     Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default);
+    
     // TODO: JE - Implement this method and the associated API endpoint. This will be used to associate transactions that were created separately (e.g. via a bank feed vs. manually by the user) or to change associations after creation.
     //Task AssociateFinancialTransactions(Guid financialTransactionId, Guid associatedFinancialTransactionId, CancellationToken cancellationToken = default);
+    
     Task AssociateFinancialTransactionWithAccount(Guid financialTransactionId, Guid associatedFinancialAccountId, bool deleteExistingAssociatedTransaction = false, CancellationToken cancellationToken = default);
 }
 
@@ -48,15 +58,15 @@ internal class TransactionService(
             {
                 financialTransactionWithCorrelation.CorrelatedTransaction.CorrelationId = null;
             }
-
-            var financialTransaction = _mapper.ToModel(financialTransactionWithCorrelation.Transaction);
-
-            var associatedFinancialTransaction = await CreateAssociatedFinancialTransactionAsync(financialTransaction, associatedFinancialAccountId, saveChanges: false, cancellationToken);
-
-            financialTransactionWithCorrelation.Transaction.CorrelationId = associatedFinancialTransaction.CorrelationId;
-
-            await _financialTransactions.SaveChangesAsync(cancellationToken);
         }
+
+        var financialTransaction = _mapper.ToModel(financialTransactionWithCorrelation.Transaction);
+
+        var associatedFinancialTransaction = await CreateAssociatedFinancialTransactionAsync(financialTransaction, associatedFinancialAccountId, saveChanges: false, cancellationToken);
+
+        financialTransactionWithCorrelation.Transaction.CorrelationId = associatedFinancialTransaction.CorrelationId;
+
+        await _financialTransactions.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<FinancialTransaction> CreateAsync(FinancialTransaction transaction, Guid? associatedFinancialAccountId, CancellationToken cancellationToken = default)
@@ -95,32 +105,13 @@ internal class TransactionService(
         return financialTransaction;
     }
 
-    public async Task<IEnumerable<FinancialTransaction>> GetAsync(
-        FinancialTransactionStatus status,
-        Guid? cursor = null,
-        int pageSize = 25,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<FinancialTransaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var query =
             _financialTransactions
                 .Include(t => t.FinancialAccount)
-                // TODO: JE - This will need to be modified to support filters instead of defaulting to date descending
-                .OrderByDescending(t => t.Date)
-                .AsQueryable();
-
-        if (cursor.HasValue)
-        {
-            var cursorEntity = await _financialTransactions.FirstOrDefaultAsync(e => e.Id == cursor.Value, cancellationToken);
-
-            if (cursorEntity == null)
-            {
-                return [];
-            }
-
-            query = query.SkipWhile(e => e.Id != cursor.Value).Skip(1);
-        }
-
-        query = query.Take(pageSize);
+                .Where(t => t.FinancialAccount!.UserId == userId)
+                .OrderByDescending(t => t.Date);
 
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
 
@@ -128,6 +119,40 @@ internal class TransactionService(
 
         return financialTransactions;
     }
+
+    //public async Task<IEnumerable<FinancialTransaction>> GetAsync(
+    //    FinancialTransactionStatus status,
+    //    Guid? cursor = null,
+    //    int pageSize = 25,
+    //    CancellationToken cancellationToken = default)
+    //{
+    //    var query =
+    //        _financialTransactions
+    //            .Include(t => t.FinancialAccount)
+    //            // TODO: JE - This will need to be modified to support filters instead of defaulting to date descending
+    //            .OrderByDescending(t => t.Date)
+    //            .AsQueryable();
+
+    //    if (cursor.HasValue)
+    //    {
+    //        var cursorEntity = await _financialTransactions.FirstOrDefaultAsync(e => e.Id == cursor.Value, cancellationToken);
+
+    //        if (cursorEntity == null)
+    //        {
+    //            return [];
+    //        }
+
+    //        query = query.SkipWhile(e => e.Id != cursor.Value).Skip(1);
+    //    }
+
+    //    query = query.Take(pageSize);
+
+    //    var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
+
+    //    var financialTransactions = results.Select(_mapper.ToModel);
+
+    //    return financialTransactions;
+    //}
 
     public async Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default)
     {

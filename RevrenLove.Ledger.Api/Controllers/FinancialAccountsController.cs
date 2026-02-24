@@ -8,7 +8,8 @@ namespace RevrenLove.Ledger.Api.Controllers;
 public class FinancialAccountsController(
     IFinancialAccountsService financialAccountsService,
     Mapper mapper,
-    UserManager<Entities.LedgerUser> userManager) : SecureApiControllerBase
+    UserManager<Entities.LedgerUser> userManager)
+        : SecureApiControllerBase(userManager)
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FinancialAccount>>> GetAsync()
@@ -78,6 +79,4 @@ public class FinancialAccountsController(
             return NotFound();
         }
     }
-
-    private Guid GetUserId() => Guid.Parse(userManager.GetUserId(User)!);
 }
