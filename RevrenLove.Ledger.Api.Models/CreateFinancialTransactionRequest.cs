@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Api.Models;
 
-public record AddTransactionModel
+public class CreateFinancialTransactionRequest
 {
     public Guid FinancialAccountId { get; set; }
 
@@ -17,4 +18,6 @@ public record AddTransactionModel
 
     [Required(ErrorMessage = "Date is required")]
     public required DateOnly Date { get; set; }
+
+    public required FinancialTransactionStatus Status { get; set; } = FinancialTransactionStatus.Posted;
 }

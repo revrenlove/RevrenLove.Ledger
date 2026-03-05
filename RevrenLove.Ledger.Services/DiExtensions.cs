@@ -9,7 +9,7 @@ public static class DiExtensions
     public static IServiceCollection AddLedgerServices(this IServiceCollection services) =>
         services
             .AddScoped<IFinancialAccountsService, FinancialAccountsService>()
-            .AddScoped<IFinancialTransactionService, TransactionService>()
+            .AddScoped<IFinancialTransactionService, FinancialTransactionService>()
             .AddScoped(typeof(IDataAccessor<>), typeof(DataAccessor<>))
             .AddSingleton<Mapper>();
 }

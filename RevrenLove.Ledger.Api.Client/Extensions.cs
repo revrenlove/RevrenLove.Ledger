@@ -5,8 +5,8 @@ namespace RevrenLove.Ledger.Api.Client;
 internal static class Extensions
 {
     /// <summary>
-    /// Sends a GET request to the specified Uri and returns the value that results from
-    /// deserializing the response body as JSON in an asynchronous operation.
+    /// Sends a GET request to the base Uri of the client and returns the value that
+    /// results from deserializing the response body as JSON in an asynchronous operation.
     /// </summary>
     /// <param name="httpClient">The client used to send the request.</param>
     /// <param name="cancellationToken">

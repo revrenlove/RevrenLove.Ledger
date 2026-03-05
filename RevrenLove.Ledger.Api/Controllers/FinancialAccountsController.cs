@@ -45,12 +45,17 @@ public class FinancialAccountsController(
 
         var createdAccount = await financialAccountsService.CreateAsync(userId, mapper.ToServiceModel(request));
         
-        return Created(Url.Content($"~/api/FinancialAccounts/{createdAccount.Id}")!, mapper.ToApiModel(createdAccount));
+        return Created(Url.Content($"~/api/FinancialAccounts/{createdAccount.Id}"), mapper.ToApiModel(createdAccount));
     }
 
     [HttpPut("{accountId:guid}")]
     public async Task<ActionResult<FinancialAccount>> UpdateAsync(Guid accountId, FinancialAccount request)
     {
+        if (accountId != request.Id)
+        {
+            return BadRequest("Account ID in URL does not match account ID in request body.");
+        }
+
         var userId = GetUserId();
 
         try

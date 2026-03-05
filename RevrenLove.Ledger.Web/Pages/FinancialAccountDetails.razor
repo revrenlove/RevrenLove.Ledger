@@ -2,6 +2,7 @@
 
 @using RevrenLove.Ledger.Api.Client
 @using RevrenLove.Ledger.Api.Models
+@using RevrenLove.Ledger.Shared
 
 @inject ILedgerApiClient Client
 @inject NavigationManager NavigationManager
@@ -88,7 +89,7 @@ else
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger" />
                 <div class="row g-2">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="datePosted" class="form-label">Date</label>
                         <InputDate id="datePosted" class="form-control" @bind-Value="newTransaction.Date" aria-required="true" aria-describedby="datePosted-validation" />
                         <ValidationMessage For="@(() => newTransaction.Date)" id="datePosted-validation" />
@@ -97,6 +98,16 @@ else
                         <label for="description" class="form-label">Description</label>
                         <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" placeholder="Transaction description" aria-describedby="description-validation" />
                         <ValidationMessage For="@(() => newTransaction.Description)" id="description-validation" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="status" class="form-label">Status</label>
+                        <InputSelect id="status" class="form-control" @bind-Value="newTransaction.Status">
+                            @foreach (var status in Enum.GetValues<FinancialTransactionStatus>())
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => newTransaction.Status)" id="status-validation" />
                     </div>
                     <div class="col-md-2">
                         <label for="destinationAccount" class="form-label">Destination Account</label>
@@ -114,7 +125,7 @@ else
                         <InputNumber step="0.01" id="amount" class="form-control" @bind-Value="newTransaction.Amount" aria-required="true" aria-describedby="amount-validation" />
                         <ValidationMessage For="@(() => newTransaction.Amount)" id="amount-validation" />
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-md-1 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100" aria-label="Add transaction">Add</button>
                     </div>
                 </div>
@@ -122,7 +133,7 @@ else
         </div>
     </div>
 
-    @if (ledgerTransactions.Length == 0)
+    @if (financialTransactions.Length == 0)
     {
         <p><em>No ledger transactions found for this financial account.</em></p>
     }
@@ -134,15 +145,28 @@ else
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
+                    <th>Associated Account</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var transaction in ledgerTransactions)
+                @foreach (var transaction in financialTransactions)
                 {
                     <tr>
-                        <td>@transaction.DatePosted.ToShortDateString()</td>
+                        <td>@transaction.Date.ToShortDateString()</td>
                         <td>@transaction.Description</td>
                         <td>@transaction.Amount.ToString("C")</td>
+                        @if (transaction.AssociatedTransaction is not null)
+                        {
+                            <td>
+                                <a href="@($"/financial-accounts/{transaction.AssociatedTransaction!.FinancialAccount!.Id}")">
+                                    @transaction.AssociatedTransaction!.FinancialAccount!.Name
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
                     </tr>
                 }
             </tbody>
@@ -155,14 +179,15 @@ else
     public Guid FinancialAccountId { get; set; }
 
     private FinancialAccount? financialAccount;
-    private LedgerTransaction[] ledgerTransactions = [];
+    private FinancialTransaction[] financialTransactions = [];
     private FinancialAccount[] allAccounts = [];
 
     private FinancialAccount editModel = new();
-    private AddTransactionModel newTransaction = new()
+    private CreateFinancialTransactionRequest newTransaction = new()
     {
         Amount = 0,
         Date = DateOnly.FromDateTime(DateTime.Now),
+        Status = FinancialTransactionStatus.Pending
     };
     private bool isEditing = false;
     private string? errorMessage;
@@ -172,6 +197,12 @@ else
         await LoadFinancialAccountDetails();
         await LoadLedgerTransactions();
         await LoadAllAccounts();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadFinancialAccountDetails();
+        await LoadLedgerTransactions();
     }
 
     private async Task LoadFinancialAccountDetails()
@@ -195,10 +226,10 @@ else
             return;
         }
 
-        var result = await Client.LedgerTransactions.GetByFinancialAccountIdAsync(financialAccount.Id);
+        var result = await Client.FinancialTransactions.GetByFinancialAccountIdAsync(financialAccount.Id);
         if (result.IsSuccessStatusCode)
         {
-            ledgerTransactions = result.Value!.ToArray();
+            financialTransactions = result.Value!.ToArray();
         }
         else
         {
@@ -295,21 +326,22 @@ else
 
         newTransaction.FinancialAccountId = financialAccount.Id;
 
-        // var result = await Client.LedgerTransactions.CreateAsync(newTransaction);
+        var result = await Client.FinancialTransactions.CreateAsync(newTransaction);
 
-        // if (result.IsSuccessStatusCode)
-        // {
-        //     newTransaction = new()
-        //     {
-        //         Amount = 0,
-        //         DatePosted = DateOnly.FromDateTime(DateTime.Now),
-        //     };
-        //     await LoadLedgerTransactions();
-        // }
-        // else
-        // {
-        //     // TODO: JE - handle error
-        //     errorMessage = result.RawContent;
-        // }
+        if (result.IsSuccessStatusCode)
+        {
+            newTransaction = new()
+            {
+                Amount = 0,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Status = FinancialTransactionStatus.Pending
+            };
+            await LoadLedgerTransactions();
+        }
+        else
+        {
+            // TODO: JE - handle error
+            errorMessage = result.RawContent;
+        }
     }
 }

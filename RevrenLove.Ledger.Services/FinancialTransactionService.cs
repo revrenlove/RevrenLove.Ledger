@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Services.Models;
-using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Services;
 
@@ -15,19 +14,23 @@ public interface IFinancialTransactionService
     // TODO: JE - THIS IS TEMPORARY!!!
     [Obsolete("This method is temporary and will be removed in a future version.")]
     Task<IEnumerable<FinancialTransaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    
+
+    Task<IEnumerable<FinancialTransaction>> GetByFinancialAccountIdAsync(Guid financialAccountId, CancellationToken cancellationToken = default);
+
     // TODO: JE - Consider whether we want to have separate methods for creating transactions with vs. without associations, or if we want to have a single method that can handle both scenarios (e.g. by making the `associatedFinancialAccountId` parameter optional and handling the logic accordingly).
     Task<FinancialTransaction> CreateAsync(FinancialTransaction transaction, Guid? associatedFinancialAccountId, CancellationToken cancellationToken = default);
-    
+
     Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default);
-    
+
+    Task DeleteAsync(Guid transactionId, CancellationToken cancellationToken = default);
+
     // TODO: JE - Implement this method and the associated API endpoint. This will be used to associate transactions that were created separately (e.g. via a bank feed vs. manually by the user) or to change associations after creation.
     //Task AssociateFinancialTransactions(Guid financialTransactionId, Guid associatedFinancialTransactionId, CancellationToken cancellationToken = default);
-    
+
     Task AssociateFinancialTransactionWithAccount(Guid financialTransactionId, Guid associatedFinancialAccountId, bool deleteExistingAssociatedTransaction = false, CancellationToken cancellationToken = default);
 }
 
-internal class TransactionService(
+internal class FinancialTransactionService(
     IDataAccessor<Entities.FinancialTransaction> financialTransactions,
     Mapper mapper)
         : IFinancialTransactionService
@@ -120,6 +123,28 @@ internal class TransactionService(
         return financialTransactions;
     }
 
+    public async Task<IEnumerable<FinancialTransaction>> GetByFinancialAccountIdAsync(Guid financialAccountId, CancellationToken cancellationToken = default)
+    {
+        var query =
+            _financialTransactions
+                .Include(t => t.FinancialAccount)
+                .Where(t => t.FinancialAccountId == financialAccountId)
+                .OrderByDescending(t => t.Date);
+        
+        // TODO: JE - Look into projection in Mapperly
+        var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
+
+        // BUG: JE - This will result in the `AssociatedTransaction` property being populated,
+        // but the `FinancialAccount` property of the associated transaction will not be populated
+        // since it's not included in the query. This is a limitation of how the correlation is
+        // currently implemented and may need to be addressed in the future if we want to
+        // support scenarios where the associated transaction's financial account information is needed.
+
+        var financialTransactions = results.Select(_mapper.ToModel);
+        
+        return financialTransactions;
+    }
+
     //public async Task<IEnumerable<FinancialTransaction>> GetAsync(
     //    FinancialTransactionStatus status,
     //    Guid? cursor = null,
@@ -167,6 +192,11 @@ internal class TransactionService(
         return _mapper.ToModel(entity);
     }
 
+    public async Task DeleteAsync(Guid transactionId, CancellationToken cancellationToken = default)
+    {
+        await _financialTransactions.DeleteAsync(transactionId, cancellationToken: cancellationToken);
+    }
+
     private async Task<Entities.FinancialTransaction> CreateAssociatedFinancialTransactionAsync(
         FinancialTransaction transaction,
         Guid associatedFinancialAccountId,
@@ -208,7 +238,7 @@ internal class TransactionService(
     private IQueryable<FinancialTransactionWithCorrelation> GetQueryWithCorrelation(IQueryable<Entities.FinancialTransaction> query) =>
         query
             .GroupJoin(
-                _financialTransactions,
+                _financialTransactions.Include(t => t.FinancialAccount),
                 t => t.CorrelationId,
                 ct => ct.CorrelationId,
                 (t, correlatedGroup) => new { Transaction = t, CorrelatedGroup = correlatedGroup })
