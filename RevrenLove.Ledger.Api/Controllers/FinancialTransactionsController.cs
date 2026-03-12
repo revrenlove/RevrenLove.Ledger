@@ -102,4 +102,19 @@ public class FinancialTransactionsController(
 
         return NoContent();
     }
+
+    [HttpPost("{id:guid}/post")]
+    public async Task<IActionResult> PostTransactionAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _financialTransactionService.PostAsync(id, cancellationToken);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

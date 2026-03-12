@@ -145,7 +145,8 @@ else
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
-                    <th>Associated Account</th>
+                    <th>Associated Transaction</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -153,12 +154,12 @@ else
                 {
                     <tr>
                         <td>@transaction.Date.ToShortDateString()</td>
-                        <td>@transaction.Description</td>
+                        <td><a href="@($"/financial-transactions/{transaction.Id}")">@transaction.Description</a></td>
                         <td>@transaction.Amount.ToString("C")</td>
                         @if (transaction.AssociatedTransaction is not null)
                         {
                             <td>
-                                <a href="@($"/financial-accounts/{transaction.AssociatedTransaction!.FinancialAccount!.Id}")">
+                                <a href="@($"/financial-transactions/{transaction.AssociatedTransactionId}")">
                                     @transaction.AssociatedTransaction!.FinancialAccount!.Name
                                 </a>
                             </td>
@@ -167,6 +168,15 @@ else
                         {
                             <td></td>
                         }
+                        @if (transaction.Status == FinancialTransactionStatus.Pending)
+                        {
+                            <td><button type="button" class="btn btn-link" @onclick="() => PostTransaction(transaction)">Post</button></td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
                     </tr>
                 }
             </tbody>
@@ -219,6 +229,7 @@ else
         }
     }
 
+    // BUG: This is fucked up. Not sure if it's the response or the rendering.
     private async Task LoadLedgerTransactions()
     {
         if (financialAccount is null)
@@ -342,6 +353,21 @@ else
         {
             // TODO: JE - handle error
             errorMessage = result.RawContent;
+        }
+    }
+
+    private async Task PostTransaction(FinancialTransaction transaction)
+    {
+        var result = await Client.FinancialTransactions.PostTransactionAsync(transaction.Id);
+        
+        if (result.IsSuccessStatusCode)
+        {
+            transaction.Status = FinancialTransactionStatus.Posted;
+        }
+        else
+        {
+            // TODO: JE - handle error
+            errorMessage = result.ReasonPhrase;
         }
     }
 }

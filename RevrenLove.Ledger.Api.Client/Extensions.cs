@@ -27,4 +27,7 @@ internal static class Extensions
 
     public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, T value, CancellationToken cancellationToken = default) =>
         await httpClient.PostAsJsonAsync(string.Empty, value, cancellationToken);
+
+    public static async Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string? requestUri, CancellationToken cancellationToken = default) =>
+        await httpClient.PostAsync(requestUri, null, cancellationToken);
 }

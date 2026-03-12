@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Services.Models;
+using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Services;
 
@@ -23,6 +24,8 @@ public interface IFinancialTransactionService
     Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(Guid transactionId, CancellationToken cancellationToken = default);
+
+    Task PostAsync(Guid transactionId, CancellationToken cancellationToken = default);
 
     // TODO: JE - Implement this method and the associated API endpoint. This will be used to associate transactions that were created separately (e.g. via a bank feed vs. manually by the user) or to change associations after creation.
     //Task AssociateFinancialTransactions(Guid financialTransactionId, Guid associatedFinancialTransactionId, CancellationToken cancellationToken = default);
@@ -130,18 +133,12 @@ internal class FinancialTransactionService(
                 .Include(t => t.FinancialAccount)
                 .Where(t => t.FinancialAccountId == financialAccountId)
                 .OrderByDescending(t => t.Date);
-        
+
         // TODO: JE - Look into projection in Mapperly
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
 
-        // BUG: JE - This will result in the `AssociatedTransaction` property being populated,
-        // but the `FinancialAccount` property of the associated transaction will not be populated
-        // since it's not included in the query. This is a limitation of how the correlation is
-        // currently implemented and may need to be addressed in the future if we want to
-        // support scenarios where the associated transaction's financial account information is needed.
-
         var financialTransactions = results.Select(_mapper.ToModel);
-        
+
         return financialTransactions;
     }
 
@@ -179,22 +176,47 @@ internal class FinancialTransactionService(
     //    return financialTransactions;
     //}
 
+    // TODO: JE - This needs to be tested
     public async Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default)
     {
-        var entity = await _financialTransactions.GetAsync(transaction.Id, cancellationToken);
+        var transactionWithCorrelation = await GetFinancialTransactionWithCorrelationAsync(transaction.Id, cancellationToken);
 
-        entity.Amount = transaction.Amount;
-        entity.Description = transaction.Description;
-        entity.Date = transaction.Date;
+        transactionWithCorrelation.Transaction.Amount = transaction.Amount;
+        transactionWithCorrelation.Transaction.Description = transaction.Description;
+        transactionWithCorrelation.Transaction.Date = transaction.Date;
+
+        if (transactionWithCorrelation.CorrelatedTransaction != null)
+        {
+            transactionWithCorrelation.CorrelatedTransaction.Amount = -transaction.Amount;
+            transactionWithCorrelation.CorrelatedTransaction.Description = transaction.Description;
+            transactionWithCorrelation.CorrelatedTransaction.Date = transaction.Date;
+        }
 
         await _financialTransactions.SaveChangesAsync(cancellationToken);
 
-        return _mapper.ToModel(entity);
+        return _mapper.ToModel(transactionWithCorrelation.Transaction);
     }
 
     public async Task DeleteAsync(Guid transactionId, CancellationToken cancellationToken = default)
     {
+        var financialTransactionWithCorrelation = await GetFinancialTransactionWithCorrelationAsync(transactionId, cancellationToken);
+
+        if (financialTransactionWithCorrelation.CorrelatedTransaction != null)
+        {
+            await _financialTransactions.DeleteAsync(financialTransactionWithCorrelation.CorrelatedTransaction.Id, saveChanges: false, cancellationToken: cancellationToken);
+        }
+
         await _financialTransactions.DeleteAsync(transactionId, cancellationToken: cancellationToken);
+    }
+
+    public async Task PostAsync(Guid transactionId, CancellationToken cancellationToken = default)
+    {
+        var transactionWithCorrelation = await GetFinancialTransactionWithCorrelationAsync(transactionId, cancellationToken);
+
+        transactionWithCorrelation.CorrelatedTransaction?.Status = FinancialTransactionStatus.Posted;
+        transactionWithCorrelation.Transaction.Status = FinancialTransactionStatus.Posted;
+
+        await _financialTransactions.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<Entities.FinancialTransaction> CreateAssociatedFinancialTransactionAsync(
@@ -218,17 +240,21 @@ internal class FinancialTransactionService(
 
     private async Task<FinancialTransactionWithCorrelation> GetFinancialTransactionWithCorrelationAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var query = _financialTransactions.Include(t => t.FinancialAccount);
+        var query =
+            _financialTransactions
+                .Include(t => t.FinancialAccount)
+                .Where(t => t.Id == id);
 
         try
         {
             var financialTransactionWithCorrelation =
-                await
+                (await
                     GetQueryWithCorrelation(query)
-                        .SingleAsync(t => t.Transaction.Id == id, cancellationToken);
+                        .ToListAsync(cancellationToken)).FirstOrDefault();
 
-            return financialTransactionWithCorrelation;
+            return financialTransactionWithCorrelation!;
         }
+        // TODO: JE - Refine this catch
         catch (InvalidOperationException ex)
         {
             throw new KeyNotFoundException($"Financial transaction with Id '{id}' was not found.", ex);
@@ -238,7 +264,7 @@ internal class FinancialTransactionService(
     private IQueryable<FinancialTransactionWithCorrelation> GetQueryWithCorrelation(IQueryable<Entities.FinancialTransaction> query) =>
         query
             .GroupJoin(
-                _financialTransactions.Include(t => t.FinancialAccount),
+                _financialTransactions.Include(t => t.FinancialAccount).Where(ct => ct.CorrelationId != null),
                 t => t.CorrelationId,
                 ct => ct.CorrelationId,
                 (t, correlatedGroup) => new { Transaction = t, CorrelatedGroup = correlatedGroup })

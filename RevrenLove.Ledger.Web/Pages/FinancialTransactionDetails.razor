@@ -1,0 +1,124 @@
+﻿@page "/financial-transactions/{financialTransactionId:guid}"
+
+@using RevrenLove.Ledger.Api.Client
+@using RevrenLove.Ledger.Api.Models
+@using System.Text.Json
+@using RevrenLove.Ledger.Shared
+
+@inject ILedgerApiClient Client
+@inject NavigationManager NavigationManager
+
+@if (financialTransaction == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (financialTransaction.Status == FinancialTransactionStatus.Pending)
+    {
+        <h3>@financialTransaction.Description - Pending</h3>
+        <button type="button" class="btn btn-link" @onclick="() => PostTransaction()">Post</button>
+    }
+    else if (financialTransaction.Status == FinancialTransactionStatus.Posted)
+    {
+        <h3>@financialTransaction.Description</h3>
+    }
+    
+    <h6>ID: @financialTransaction.Id</h6>
+    
+    <h4>Account: <a href="/financial-accounts/@financialTransaction.FinancialAccount!.Id">@financialTransaction.FinancialAccount!.Name</a></h4>
+    
+    <p>Amount: @financialTransaction.Amount</p>
+    <p>Description: @financialTransaction.Description</p>
+    <p>Date: @financialTransaction.Date</p>
+
+    @if (financialTransaction.AssociatedTransaction is not null)
+    {
+        <p>Associated Transaction: <a href="/financial-transactions/@financialTransaction.AssociatedTransactionId">@financialTransaction.AssociatedTransaction.FinancialAccount!.Name</a></p>
+    }
+
+    <EditForm Model="financialTransaction" OnValidSubmit="UpdateTransaction">
+        <div class="mb-3">
+            <label class="form-label">Amount:</label>
+            <InputNumber class="form-control" @bind-Value="financialTransaction.Amount" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description:</label>
+            <InputText class="form-control" @bind-Value="financialTransaction.Description" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Date:</label>
+            <InputDate class="form-control" @bind-Value="financialTransaction.Date" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public Guid FinancialTransactionId { get; set; }
+
+    private FinancialTransaction? financialTransaction;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFinancialTransactionAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadFinancialTransactionAsync();
+    }
+
+    private async Task LoadFinancialTransactionAsync()
+    {
+        var result = await Client.FinancialTransactions.GetAsync(FinancialTransactionId);
+
+        if (result.IsSuccessStatusCode)
+        {
+            financialTransaction = result.Value;
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/financial-accounts");
+        }
+    }
+
+    private async Task UpdateTransaction()
+    {
+        var result = await Client.FinancialTransactions.UpdateAsync(financialTransaction!);
+
+        if (result.IsSuccessStatusCode)
+        {
+            financialTransaction = result.Value;
+        }
+        else
+        {
+            // TODO: JE - Handle error response and display appropriate message to the user
+            errorMessage = $"Error updating transaction.";
+        }
+    }
+
+    private async Task PostTransaction()
+    {
+        var result = await Client.FinancialTransactions.PostTransactionAsync(financialTransaction!.Id);
+
+        if (result.IsSuccessStatusCode)
+        {
+            financialTransaction.Status = FinancialTransactionStatus.Posted;
+        }
+        else
+        {
+            // TODO: JE - Handle error response and display appropriate message to the user
+            errorMessage = $"Error posting transaction.";
+        }
+    }
+}
