@@ -16,6 +16,4 @@ public record FinancialAccount : IModel
     public string? Description { get; set; }
 
     public bool IsBalanceExempt { get; set; } = false;
-
-    public bool IsActive { get; set; }
 }

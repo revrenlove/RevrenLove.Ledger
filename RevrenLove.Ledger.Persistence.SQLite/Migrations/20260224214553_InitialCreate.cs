@@ -162,9 +162,10 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    FriendlyId = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IsBalanceExempt = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -178,7 +179,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LedgerTransactions",
+                name: "FinancialTransactions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -186,37 +187,17 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     Amount = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    CorrelationId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LedgerTransactions", x => x.Id);
+                    table.PrimaryKey("PK_FinancialTransactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LedgerTransactions_FinancialAccounts_FinancialAccountId",
+                        name: "FK_FinancialTransactions_FinancialAccounts_FinancialAccountId",
                         column: x => x.FinancialAccountId,
                         principalTable: "FinancialAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProspectiveTransactions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FinancialAccountId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Amount = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProspectiveTransactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProspectiveTransactions_FinancialAccounts_FinancialAccountId",
-                        column: x => x.FinancialAccountId,
-                        principalTable: "FinancialAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -225,14 +206,21 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     FinancialAccountId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DestinationFinancialAccountId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Amount = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    Frequency = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Frequency = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RecurringTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RecurringTransactions_FinancialAccounts_DestinationFinancialAccountId",
+                        column: x => x.DestinationFinancialAccountId,
+                        principalTable: "FinancialAccounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RecurringTransactions_FinancialAccounts_FinancialAccountId",
                         column: x => x.FinancialAccountId,
@@ -279,19 +267,20 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FinancialAccounts_UserId",
+                name: "IX_FinancialAccounts_UserId_FriendlyId",
                 table: "FinancialAccounts",
-                column: "UserId");
+                columns: new[] { "UserId", "FriendlyId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LedgerTransactions_FinancialAccountId",
-                table: "LedgerTransactions",
+                name: "IX_FinancialTransactions_FinancialAccountId",
+                table: "FinancialTransactions",
                 column: "FinancialAccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProspectiveTransactions_FinancialAccountId",
-                table: "ProspectiveTransactions",
-                column: "FinancialAccountId");
+                name: "IX_RecurringTransactions_DestinationFinancialAccountId",
+                table: "RecurringTransactions",
+                column: "DestinationFinancialAccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecurringTransactions_FinancialAccountId",
@@ -318,10 +307,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "LedgerTransactions");
-
-            migrationBuilder.DropTable(
-                name: "ProspectiveTransactions");
+                name: "FinancialTransactions");
 
             migrationBuilder.DropTable(
                 name: "RecurringTransactions");

@@ -8,7 +8,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
     where TServiceModel : class
     where TEntityModel : class, IEntity
 {
-    protected readonly LedgerSQLiteDbContext dbContext = dbContext;
+    protected readonly LedgerSQLiteDbContext DbContext = dbContext;
 
     protected async Task<TServiceModel> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -23,7 +23,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
 
     protected async Task<ICollection<TServiceModel>> GetAsync(Guid? cursor, int? pageSize, Func<IQueryable<TEntityModel>, IQueryable<TEntityModel>> configureQuery, CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntityModel> query = dbContext.Set<TEntityModel>();
+        IQueryable<TEntityModel> query = DbContext.Set<TEntityModel>();
 
         query = configureQuery(query);
 
@@ -52,9 +52,9 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
     {
         var entity = ToEntity(model, configureEntity);
 
-        dbContext.Set<TEntityModel>().Add(entity);
+        DbContext.Set<TEntityModel>().Add(entity);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         var createdModel = ToServiceModel(entity);
 
@@ -65,20 +65,20 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
     {
         var entity = await GetEntityAsync(id, cancellationToken);
 
-        dbContext.Set<TEntityModel>().Remove(entity);
+        DbContext.Set<TEntityModel>().Remove(entity);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await DbContext.SaveChangesAsync(cancellationToken);
     }
 
     protected async Task<TServiceModel> UpdateAsync(TServiceModel model, Action<TEntityModel>? configureEntity = null, CancellationToken cancellationToken = default)
     {
         var entity = ToEntity(model, configureEntity);
-        var entry = dbContext.Entry(entity);
+        var entry = DbContext.Entry(entity);
 
         if (entry.State == EntityState.Detached)
         {
             var existingEntity = await GetEntityAsync(entity.Id, cancellationToken);
-            entry = dbContext.Entry(existingEntity);
+            entry = DbContext.Entry(existingEntity);
 
             foreach (var property in entry.Properties)
             {
@@ -105,7 +105,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
 
         if (modifiedProperties.Count > 0)
         {
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await DbContext.SaveChangesAsync(cancellationToken);
         }
 
         var updatedModel = ToServiceModel(entity);
@@ -121,7 +121,7 @@ internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQL
         Guid id,
         CancellationToken cancellationToken)
     {
-        var query = dbContext
+        var query = DbContext
             .Set<TEntityModel>()
             .IgnoreQueryFilters();
 

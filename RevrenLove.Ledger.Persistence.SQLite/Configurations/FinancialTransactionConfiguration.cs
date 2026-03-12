@@ -4,21 +4,17 @@ using RevrenLove.Ledger.Entities;
 
 namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
 
-public class LedgerTransactionConfiguration : IEntityTypeConfiguration<LedgerTransaction>
+public class FinancialTransactionConfiguration : IEntityTypeConfiguration<FinancialTransaction>
 {
-    public void Configure(EntityTypeBuilder<LedgerTransaction> builder)
+    public void Configure(EntityTypeBuilder<FinancialTransaction> builder)
     {
-        builder
-            .Property(l => l.CreatedOn)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
         builder
             .Property(l => l.Amount)
             .HasPrecision(10, 2);
 
         builder
             .HasOne(lt => lt.FinancialAccount)
-            .WithMany(fa => fa.LedgerTransactions)
+            .WithMany(fa => fa.FinancialTransactions)
             .HasForeignKey(lt => lt.FinancialAccountId)
             .IsRequired();
 

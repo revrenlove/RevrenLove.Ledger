@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Api.Models;
 
-public record LedgerTransaction : IModel
+public class CreateFinancialTransactionRequest
 {
-    public Guid Id { get; set; }
     public Guid FinancialAccountId { get; set; }
+
+    public Guid? DestinationFinancialAccountId { get; set; }
 
     [Required(ErrorMessage = "Amount is required")]
     [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
@@ -14,8 +16,8 @@ public record LedgerTransaction : IModel
     [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
     public string? Description { get; set; }
 
-    [Required(ErrorMessage = "Date posted is required")]
-    public required DateOnly DatePosted { get; set; }
+    [Required(ErrorMessage = "Date is required")]
+    public required DateOnly Date { get; set; }
 
-    public Guid CorrelationId { get; set; }
+    public required FinancialTransactionStatus Status { get; set; } = FinancialTransactionStatus.Posted;
 }

@@ -20,9 +20,10 @@ public class ApiClientResult<T> : ApiClientResult
 
     public static new async Task<ApiClientResult<T>> CreateAsync(HttpResponseMessage httpResponse)
     {
-        var result = new ApiClientResult<T>(httpResponse);
-
-        result.RawContent = await httpResponse.Content.ReadAsStringAsync();
+        var result = new ApiClientResult<T>(httpResponse)
+        {
+            RawContent = await httpResponse.Content.ReadAsStringAsync()
+        };
 
         if (!result.IsSuccessStatusCode)
         {
@@ -35,6 +36,7 @@ public class ApiClientResult<T> : ApiClientResult
     }
 }
 
+// TODO: JE - Maybe this should be an interface or something and then we can have a separate class for errors or something? I don't know, just feels weird to have the error information on the same class as the success information...
 public class ApiClientResult
 {
     public HttpStatusCode StatusCode => HttpResponse.StatusCode;

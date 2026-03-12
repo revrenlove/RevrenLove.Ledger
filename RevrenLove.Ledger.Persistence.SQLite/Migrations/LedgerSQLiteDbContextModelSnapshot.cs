@@ -156,9 +156,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsBalanceExempt")
                         .HasColumnType("INTEGER");
 
@@ -177,7 +174,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.ToTable("FinancialAccounts");
                 });
 
-            modelBuilder.Entity("RevrenLove.Ledger.Entities.LedgerTransaction", b =>
+            modelBuilder.Entity("RevrenLove.Ledger.Entities.FinancialTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -187,15 +184,10 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("CorrelationId")
+                    b.Property<Guid?>("CorrelationId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateOnly>("DatePosted")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -204,11 +196,14 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.Property<Guid>("FinancialAccountId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FinancialAccountId");
 
-                    b.ToTable("LedgerTransactions");
+                    b.ToTable("FinancialTransactions");
                 });
 
             modelBuilder.Entity("RevrenLove.Ledger.Entities.LedgerUser", b =>
@@ -276,40 +271,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("RevrenLove.Ledger.Entities.ProspectiveTransaction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("DateEffective")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("DestinationFinancialAccountId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FinancialAccountId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DestinationFinancialAccountId");
-
-                    b.HasIndex("FinancialAccountId");
-
-                    b.ToTable("ProspectiveTransactions");
-                });
-
             modelBuilder.Entity("RevrenLove.Ledger.Entities.RecurringTransaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -330,9 +291,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Frequency")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateOnly>("StartDate")
@@ -409,29 +367,11 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RevrenLove.Ledger.Entities.LedgerTransaction", b =>
+            modelBuilder.Entity("RevrenLove.Ledger.Entities.FinancialTransaction", b =>
                 {
                     b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany("LedgerTransactions")
+                        .WithMany("FinancialTransactions")
                         .HasForeignKey("FinancialAccountId");
-
-                    b.Navigation("FinancialAccount");
-                });
-
-            modelBuilder.Entity("RevrenLove.Ledger.Entities.ProspectiveTransaction", b =>
-                {
-                    b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "DestinationFinancialAccount")
-                        .WithMany("ProspectiveIncomingTransactions")
-                        .HasForeignKey("DestinationFinancialAccountId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("RevrenLove.Ledger.Entities.FinancialAccount", "FinancialAccount")
-                        .WithMany("ProspectiveOutgoingTransactions")
-                        .HasForeignKey("FinancialAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DestinationFinancialAccount");
 
                     b.Navigation("FinancialAccount");
                 });
@@ -457,11 +397,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 
             modelBuilder.Entity("RevrenLove.Ledger.Entities.FinancialAccount", b =>
                 {
-                    b.Navigation("LedgerTransactions");
-
-                    b.Navigation("ProspectiveIncomingTransactions");
-
-                    b.Navigation("ProspectiveOutgoingTransactions");
+                    b.Navigation("FinancialTransactions");
 
                     b.Navigation("RecurringIncomingTransactionsTransactions");
 
