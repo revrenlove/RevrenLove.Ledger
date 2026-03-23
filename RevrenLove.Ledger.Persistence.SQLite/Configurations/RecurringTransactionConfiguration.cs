@@ -9,7 +9,7 @@ public class RecurringTransactionConfiguration : IEntityTypeConfiguration<Recurr
     public void Configure(EntityTypeBuilder<RecurringTransaction> builder)
     {
         builder
-            .Property(l => l.Amount)
+            .Property(rt => rt.Amount)
             .HasPrecision(10, 2);
 
         builder

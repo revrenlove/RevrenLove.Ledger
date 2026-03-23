@@ -116,8 +116,9 @@ internal class FinancialTransactionService(
         var query =
             _financialTransactions
                 .Include(t => t.FinancialAccount)
+                .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccount!.UserId == userId)
-                .OrderByDescending(t => t.Date);
+                .OrderByDescending(t => t.ComputedDisplayValue);
 
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
 
@@ -131,8 +132,9 @@ internal class FinancialTransactionService(
         var query =
             _financialTransactions
                 .Include(t => t.FinancialAccount)
+                .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccountId == financialAccountId)
-                .OrderByDescending(t => t.Date);
+                .OrderByDescending(t => t.ComputedDisplayValue);
 
         // TODO: JE - Look into projection in Mapperly
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
@@ -152,7 +154,7 @@ internal class FinancialTransactionService(
     //        _financialTransactions
     //            .Include(t => t.FinancialAccount)
     //            // TODO: JE - This will need to be modified to support filters instead of defaulting to date descending
-    //            .OrderByDescending(t => t.Date)
+    //            .OrderByDescending(t => t.ComputedDisplayValue)
     //            .AsQueryable();
 
     //    if (cursor.HasValue)
@@ -243,6 +245,7 @@ internal class FinancialTransactionService(
         var query =
             _financialTransactions
                 .Include(t => t.FinancialAccount)
+                .Include(t => t.RunningBalance)
                 .Where(t => t.Id == id);
 
         try
@@ -264,10 +267,13 @@ internal class FinancialTransactionService(
     private IQueryable<FinancialTransactionWithCorrelation> GetQueryWithCorrelation(IQueryable<Entities.FinancialTransaction> query) =>
         query
             .GroupJoin(
-                _financialTransactions.Include(t => t.FinancialAccount).Where(ct => ct.CorrelationId != null),
-                t => t.CorrelationId,
-                ct => ct.CorrelationId,
-                (t, correlatedGroup) => new { Transaction = t, CorrelatedGroup = correlatedGroup })
+                _financialTransactions
+                    .Include(t => t.FinancialAccount)
+                    .Include(t => t.RunningBalance)
+                    .Where(ct => ct.CorrelationId != null),
+                        t => t.CorrelationId,
+                        ct => ct.CorrelationId,
+                        (t, correlatedGroup) => new { Transaction = t, CorrelatedGroup = correlatedGroup })
             .SelectMany(
                 x => x.CorrelatedGroup.Where(ct => ct.Id != x.Transaction.Id).DefaultIfEmpty(),
                 (x, correlated) => new FinancialTransactionWithCorrelation(x.Transaction, correlated));

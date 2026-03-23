@@ -96,7 +96,7 @@ else
                     </div>
                     <div class="col-md-3">
                         <label for="description" class="form-label">Description</label>
-                        <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" placeholder="Transaction description" aria-describedby="description-validation" />
+                        <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" placeholder="Transaction description" aria-required="true" aria-describedby="description-validation" />
                         <ValidationMessage For="@(() => newTransaction.Description)" id="description-validation" />
                     </div>
                     <div class="col-md-2">
@@ -145,6 +145,7 @@ else
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
+                    <th>Running Balance</th>
                     <th>Associated Transaction</th>
                     <th></th>
                 </tr>
@@ -156,6 +157,7 @@ else
                         <td>@transaction.Date.ToShortDateString()</td>
                         <td><a href="@($"/financial-transactions/{transaction.Id}")">@transaction.Description</a></td>
                         <td>@transaction.Amount.ToString("C")</td>
+                        <td>@transaction.RunningBalance.ToString("C")</td>
                         @if (transaction.AssociatedTransaction is not null)
                         {
                             <td>
@@ -195,6 +197,7 @@ else
     private FinancialAccount editModel = new();
     private CreateFinancialTransactionRequest newTransaction = new()
     {
+        Description = string.Empty,
         Amount = 0,
         Date = DateOnly.FromDateTime(DateTime.Now),
         Status = FinancialTransactionStatus.Pending
@@ -345,7 +348,8 @@ else
             {
                 Amount = 0,
                 Date = DateOnly.FromDateTime(DateTime.Now),
-                Status = FinancialTransactionStatus.Pending
+                Status = FinancialTransactionStatus.Pending,
+                Description = string.Empty,
             };
             await LoadLedgerTransactions();
         }

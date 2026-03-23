@@ -11,6 +11,7 @@ public record FinancialTransaction : IModel
     public required DateOnly Date { get; set; }
     public Guid? AssociatedTransactionId { get; set; }
     public required FinancialTransactionStatus Status { get; set; }
+    public required decimal RunningBalance { get; set; }
 
     public FinancialAccount? FinancialAccount { get; set; }
     public FinancialTransaction? AssociatedTransaction { get; set; }
