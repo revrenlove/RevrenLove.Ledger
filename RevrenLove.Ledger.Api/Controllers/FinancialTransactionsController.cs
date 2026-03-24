@@ -41,11 +41,11 @@ public class FinancialTransactionsController(
         return Ok(apiTransaction);
     }
 
-        [HttpGet]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<FinancialTransaction>>> GetByFinancialAccountIdAsync([FromQuery] Guid financialAccountId, CancellationToken cancellationToken = default)
     {
         var transactions = await _financialTransactionService.GetByFinancialAccountIdAsync(financialAccountId, cancellationToken);
-        
+
         var response = transactions.Select(_mapper.ToApiModel);
 
         return Ok(response);
@@ -71,9 +71,9 @@ public class FinancialTransactionsController(
         {
             return BadRequest("Transaction ID in URL does not match transaction ID in request body.");
         }
-        
+
         var serviceModel = _mapper.ToServiceModel(financialTransaction);
-        
+
         try
         {
             serviceModel = await _financialTransactionService.UpdateAsync(serviceModel, cancellationToken);
@@ -84,7 +84,7 @@ public class FinancialTransactionsController(
         }
 
         financialTransaction = _mapper.ToApiModel(serviceModel);
-        
+
         return Ok(financialTransaction);
     }
 

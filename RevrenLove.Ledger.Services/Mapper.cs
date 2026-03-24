@@ -17,13 +17,18 @@ public partial class Mapper()
     public partial Entities.FinancialAccount ToEntity(Models.FinancialAccount model);
 
     [MapperIgnoreSource(nameof(Entities.FinancialTransaction.CorrelationId))]
+    [MapperIgnoreSource(nameof(Entities.FinancialTransaction.ComputedDisplayValue))]
     [MapperIgnoreTarget(nameof(Models.FinancialTransaction.AssociatedTransaction))]
     [MapperIgnoreTarget(nameof(Models.FinancialTransaction.AssociatedTransactionId))]
+    [MapProperty([nameof(Entities.FinancialTransaction.RunningBalance), nameof(Entities.FinancialTransaction.RunningBalance.Balance)], nameof(Models.FinancialTransaction.RunningBalance))]
     public partial Models.FinancialTransaction ToModel(Entities.FinancialTransaction entity);
 
     [MapperIgnoreTarget(nameof(Entities.FinancialTransaction.CorrelationId))]
+    [MapperIgnoreTarget(nameof(Entities.FinancialTransaction.ComputedDisplayValue))]
+    [MapperIgnoreTarget(nameof(Entities.FinancialTransaction.RunningBalance))]
     [MapperIgnoreSource(nameof(Models.FinancialTransaction.AssociatedTransaction))]
     [MapperIgnoreSource(nameof(Models.FinancialTransaction.AssociatedTransactionId))]
+    [MapperIgnoreSource(nameof(Models.FinancialTransaction.RunningBalance))]
     public partial Entities.FinancialTransaction ToEntity(Models.FinancialTransaction model);
 
     public Models.FinancialTransaction ToModel(FinancialTransactionWithCorrelation financialTransactionWithCorrelation)
@@ -41,7 +46,7 @@ public partial class Mapper()
 
         financialTransaction.AssociatedTransactionId = associatedTransactionId;
         financialTransaction.AssociatedTransaction = associatedTransaction;
-        
+
         return financialTransaction;
     }
 

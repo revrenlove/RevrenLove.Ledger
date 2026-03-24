@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RevrenLove.Ledger.Persistence.SQLite;
 
@@ -10,9 +11,11 @@ using RevrenLove.Ledger.Persistence.SQLite;
 namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(LedgerSQLiteDbContext))]
-    partial class LedgerSQLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316030644_ComputedIndex")]
+    partial class ComputedIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -185,7 +188,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ComputedDisplayValue")
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("TEXT")
                         .HasComputedColumnSql("strftime('%Y-%m-%d', Date) || '|' || Amount || '|' || Id", true);
@@ -197,8 +199,6 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("FinancialAccountId")
@@ -211,10 +211,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite.Migrations
 
                     b.HasIndex("FinancialAccountId");
 
-                    b.ToTable("FinancialTransactions", t =>
-                        {
-                            t.HasCheckConstraint("CK_FinancialTransaction_Description_MinLength", "LENGTH(TRIM(Description)) >= 1");
-                        });
+                    b.ToTable("FinancialTransactions");
                 });
 
             modelBuilder.Entity("RevrenLove.Ledger.Entities.LedgerUser", b =>
