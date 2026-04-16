@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/scripts/">
     <File Path="scripts/add-migration.sh" />
+    <File Path="scripts/commit.sh" />
   </Folder>
   <Project Path="RevrenLove.Ledger.Api.Client/RevrenLove.Ledger.Api.Client.csproj" />
   <Project Path="RevrenLove.Ledger.Api.Models/RevrenLove.Ledger.Api.Models.csproj" />
