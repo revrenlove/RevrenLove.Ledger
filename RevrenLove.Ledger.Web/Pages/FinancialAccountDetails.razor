@@ -148,6 +148,7 @@ else
                     <th>Running Balance</th>
                     <th>Associated Transaction</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -178,7 +179,7 @@ else
                         {
                             <td></td>
                         }
-
+                        <td><button type="button" class="btn btn-link" @onclick="() => ConfirmAndDeleteTransaction(transaction)">Delete</button></td>
                     </tr>
                 }
             </tbody>
@@ -383,6 +384,26 @@ else
             {
                 newTransaction.Description = selectedAccount.Name;
             }
+        }
+    }
+
+    private async Task ConfirmAndDeleteTransaction(FinancialTransaction transaction)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+            $"Are you sure you want to delete the transaction '{transaction.Description}' dated {transaction.Date.ToShortDateString()}? This action cannot be undone.");
+        if (!confirmed)
+        {
+            return;
+        }
+        var result = await Client.FinancialTransactions.DeleteAsync(transaction.Id);
+        if (result.IsSuccessStatusCode)
+        {
+            await LoadLedgerTransactions();
+        }
+        else
+        {
+            // TODO: JE - handle error
+            errorMessage = result.ReasonPhrase;
         }
     }
 }
