@@ -9,12 +9,14 @@ public class FinancialAccountsController(
     IFinancialAccountsService financialAccountsService,
     Mapper mapper,
     UserManager<Entities.LedgerUser> userManager)
-        : SecureApiControllerBase(userManager)
+        : SecureApiControllerBase()
 {
+    private readonly UserManager<Entities.LedgerUser> _userManager = userManager;
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FinancialAccount>>> GetAsync()
     {
-        var userId = GetUserId();
+        var userId = _userManager.GetUserIdAsGuid(User);
 
         var accounts = await financialAccountsService.GetByUserAsync(userId);
 
@@ -41,7 +43,7 @@ public class FinancialAccountsController(
     [HttpPost]
     public async Task<ActionResult<FinancialAccount>> CreateAsync(FinancialAccount request)
     {
-        var userId = GetUserId();
+        var userId = _userManager.GetUserIdAsGuid(User);
 
         var createdAccount = await financialAccountsService.CreateAsync(userId, mapper.ToServiceModel(request));
         
@@ -56,7 +58,7 @@ public class FinancialAccountsController(
             return BadRequest("Account ID in URL does not match account ID in request body.");
         }
 
-        var userId = GetUserId();
+        var userId = _userManager.GetUserIdAsGuid(User);
 
         try
         {

@@ -11,7 +11,7 @@ public class FinancialTransaction : IEntity
     public required DateOnly Date { get; set; }
     public required FinancialTransactionStatus Status { get; set; }
     public Guid? CorrelationId { get; set; }
-    public string ComputedDisplayValue { get; set; } = string.Empty;
+    //public string ComputedDisplayValue { get; set; } = string.Empty;
 
     public FinancialAccount? FinancialAccount { get; set; }
     public RunningBalance? RunningBalance { get; set; }
