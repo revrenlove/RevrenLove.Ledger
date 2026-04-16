@@ -29,8 +29,8 @@ public class FinancialTransactionConfiguration : IEntityTypeConfiguration<Financ
             .Navigation(lt => lt.FinancialAccount)
             .IsRequired(false);
 
-        builder
-            .Property(lt => lt.ComputedDisplayValue)
-            .HasComputedColumnSql("strftime('%Y-%m-%d', Date) || '|' || Amount || '|' || Id", stored: true);
+        //builder
+        //    .Property(lt => lt.ComputedDisplayValue)
+        //    .HasComputedColumnSql("strftime('%Y-%m-%d', Date) || '|' || Amount || '|' || Id", stored: true);
     }
 }

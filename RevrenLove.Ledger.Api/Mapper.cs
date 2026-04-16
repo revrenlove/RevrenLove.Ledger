@@ -8,6 +8,10 @@ public partial class Mapper
     public partial Models.FinancialAccount ToApiModel(Services.Models.FinancialAccount serviceModel);
     public partial Services.Models.FinancialAccount ToServiceModel(Models.FinancialAccount apiModel);
 
+    public partial Models.RecurringTransaction ToApiModel(Services.Models.RecurringTransaction serviceModel);
+    public partial Services.Models.RecurringTransaction ToServiceModel(Models.RecurringTransaction apiModel);
+
+
     [MapProperty(nameof(Services.Models.FinancialTransaction.RunningBalance), nameof(Models.FinancialTransaction.RunningBalance), Use = nameof(MapRunningBalance))]
     public partial Models.FinancialTransaction ToApiModel(Services.Models.FinancialTransaction serviceModel);
     public partial Services.Models.FinancialTransaction ToServiceModel(Models.FinancialTransaction apiModel);

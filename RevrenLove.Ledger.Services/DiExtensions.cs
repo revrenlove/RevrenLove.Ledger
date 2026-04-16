@@ -10,6 +10,7 @@ public static class DiExtensions
         services
             .AddScoped<IFinancialAccountsService, FinancialAccountsService>()
             .AddScoped<IFinancialTransactionService, FinancialTransactionService>()
+            .AddScoped<IRecurringTransactionService, RecurringTransactionService>()
             .AddScoped(typeof(IDataAccessor<>), typeof(DataAccessor<>))
             .AddSingleton<Mapper>();
 }

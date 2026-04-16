@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RevrenLove.Ledger.Api.Models;
 using RevrenLove.Ledger.Services;
 
@@ -7,9 +6,8 @@ namespace RevrenLove.Ledger.Api.Controllers;
 
 public class FinancialTransactionsController(
     IFinancialTransactionService financialTransactionService,
-    Mapper mapper,
-    UserManager<Entities.LedgerUser> userManager)
-        : SecureApiControllerBase(userManager)
+    Mapper mapper)
+        : SecureApiControllerBase()
 {
     private readonly IFinancialTransactionService _financialTransactionService = financialTransactionService;
     private readonly Mapper _mapper = mapper;

@@ -1,3 +1,7 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using RevrenLove.Ledger.Entities;
+
 #pragma warning disable IDE0130
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
@@ -27,5 +31,10 @@ public static class Extensions
         // }
 
         return services;
+    }
+
+    public static Guid GetUserIdAsGuid(this UserManager<LedgerUser> userManager, ClaimsPrincipal user)
+    {
+        return Guid.Parse(userManager.GetUserId(user)!);
     }
 }

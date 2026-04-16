@@ -111,7 +111,7 @@ else
                     </div>
                     <div class="col-md-2">
                         <label for="destinationAccount" class="form-label">Destination Account</label>
-                        <InputSelect id="destinationAccount" class="form-control" @bind-Value="newTransaction.DestinationFinancialAccountId">
+                        <InputSelect id="destinationAccount" class="form-control" @bind-Value="newTransaction.DestinationFinancialAccountId" @bind-Value:after="OnDestinationAccountChanged">
                             <option value="">-- None --</option>
                             @foreach (var account in allAccounts.Where(a => a.Id != financialAccount!.Id))
                             {
@@ -232,7 +232,6 @@ else
         }
     }
 
-    // BUG: This is fucked up. Not sure if it's the response or the rendering.
     private async Task LoadLedgerTransactions()
     {
         if (financialAccount is null)
@@ -372,6 +371,18 @@ else
         {
             // TODO: JE - handle error
             errorMessage = result.ReasonPhrase;
+        }
+    }
+
+    private void OnDestinationAccountChanged()
+    {
+        if (newTransaction.DestinationFinancialAccountId.HasValue)
+        {
+            var selectedAccount = allAccounts.FirstOrDefault(a => a.Id == newTransaction.DestinationFinancialAccountId.Value);
+            if (selectedAccount is not null)
+            {
+                newTransaction.Description = selectedAccount.Name;
+            }
         }
     }
 }

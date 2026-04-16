@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Persistence.SQLite;
 using RevrenLove.Ledger.Services.Models;
 using RevrenLove.Ledger.Shared;
 
@@ -118,7 +119,8 @@ internal class FinancialTransactionService(
                 .Include(t => t.FinancialAccount)
                 .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccount!.UserId == userId)
-                .OrderByDescending(t => t.ComputedDisplayValue);
+                .OrderByTruth()
+                .Reverse();
 
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
 
@@ -134,7 +136,8 @@ internal class FinancialTransactionService(
                 .Include(t => t.FinancialAccount)
                 .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccountId == financialAccountId)
-                .OrderByDescending(t => t.ComputedDisplayValue);
+                .OrderByTruth()
+                .Reverse();
 
         // TODO: JE - Look into projection in Mapperly
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
@@ -143,40 +146,6 @@ internal class FinancialTransactionService(
 
         return financialTransactions;
     }
-
-    //public async Task<IEnumerable<FinancialTransaction>> GetAsync(
-    //    FinancialTransactionStatus status,
-    //    Guid? cursor = null,
-    //    int pageSize = 25,
-    //    CancellationToken cancellationToken = default)
-    //{
-    //    var query =
-    //        _financialTransactions
-    //            .Include(t => t.FinancialAccount)
-    //            // TODO: JE - This will need to be modified to support filters instead of defaulting to date descending
-    //            .OrderByDescending(t => t.ComputedDisplayValue)
-    //            .AsQueryable();
-
-    //    if (cursor.HasValue)
-    //    {
-    //        var cursorEntity = await _financialTransactions.FirstOrDefaultAsync(e => e.Id == cursor.Value, cancellationToken);
-
-    //        if (cursorEntity == null)
-    //        {
-    //            return [];
-    //        }
-
-    //        query = query.SkipWhile(e => e.Id != cursor.Value).Skip(1);
-    //    }
-
-    //    query = query.Take(pageSize);
-
-    //    var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
-
-    //    var financialTransactions = results.Select(_mapper.ToModel);
-
-    //    return financialTransactions;
-    //}
 
     // TODO: JE - This needs to be tested
     public async Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default)
