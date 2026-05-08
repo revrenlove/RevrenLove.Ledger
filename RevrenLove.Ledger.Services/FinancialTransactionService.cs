@@ -147,7 +147,6 @@ internal class FinancialTransactionService(
         return financialTransactions;
     }
 
-    // TODO: JE - This needs to be tested
     public async Task<FinancialTransaction> UpdateAsync(FinancialTransaction transaction, CancellationToken cancellationToken = default)
     {
         var transactionWithCorrelation = await GetFinancialTransactionWithCorrelationAsync(transaction.Id, cancellationToken);

@@ -1,53 +1,69 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using RevrenLove.Ledger.Services.Models;
 
 namespace RevrenLove.Ledger.Services;
 
-[Mapper]
-public partial class Mapper()
+public interface IMapper
 {
-    [MapperIgnoreSource(nameof(Entities.FinancialAccount.User))]
-    [MapperIgnoreSource(nameof(Entities.FinancialAccount.UserId))]
-    [MapperIgnoreSource(nameof(Entities.FinancialAccount.FinancialTransactions))]
-    [MapperIgnoreSource(nameof(Entities.FinancialAccount.RecurringIncomingTransactionsTransactions))]
-    [MapperIgnoreSource(nameof(Entities.FinancialAccount.RecurringOutgoingTransactionsTransactions))]
-    public partial Models.FinancialAccount ToModel(Entities.FinancialAccount entity);
+    FinancialAccount ToModel(Entities.FinancialAccount entity);
+    Entities.FinancialAccount ToEntity(FinancialAccount entity);
 
-    [MapperIgnoreTarget(nameof(Entities.FinancialAccount.User))]
-    [MapperIgnoreTarget(nameof(Entities.FinancialAccount.UserId))]
-    public partial Entities.FinancialAccount ToEntity(Models.FinancialAccount model);
+    FinancialTransaction ToModel(Entities.FinancialTransaction entity);
+    Entities.FinancialTransaction ToEntity(FinancialTransaction entity);
 
-    [MapperIgnoreSource(nameof(Entities.FinancialTransaction.CorrelationId))]
-    [MapperIgnoreTarget(nameof(Models.FinancialTransaction.AssociatedTransaction))]
-    [MapperIgnoreTarget(nameof(Models.FinancialTransaction.AssociatedTransactionId))]
-    [MapProperty([nameof(Entities.FinancialTransaction.RunningBalance), nameof(Entities.FinancialTransaction.RunningBalance.Balance)], nameof(Models.FinancialTransaction.RunningBalance))]
-    public partial Models.FinancialTransaction ToModel(Entities.FinancialTransaction entity);
+    RecurringTransaction ToModel(Entities.RecurringTransaction entity);
+    Entities.RecurringTransaction ToEntity(RecurringTransaction entity);
 
-    [MapperIgnoreTarget(nameof(Entities.FinancialTransaction.CorrelationId))]
-    [MapperIgnoreTarget(nameof(Entities.FinancialTransaction.RunningBalance))]
-    [MapperIgnoreSource(nameof(Models.FinancialTransaction.AssociatedTransaction))]
-    [MapperIgnoreSource(nameof(Models.FinancialTransaction.AssociatedTransactionId))]
-    [MapperIgnoreSource(nameof(Models.FinancialTransaction.RunningBalance))]
-    public partial Entities.FinancialTransaction ToEntity(Models.FinancialTransaction model);
+    FinancialTransaction ToModel(FinancialTransactionWithCorrelation financialTransactionWithCorrelation);
+}
 
-    public Models.FinancialTransaction ToModel(FinancialTransactionWithCorrelation financialTransactionWithCorrelation)
+internal class Mapper : IMapper
+{
+    public Entities.FinancialAccount ToEntity(FinancialAccount entity)
     {
-        Models.FinancialTransaction? associatedTransaction = null;
-        Guid? associatedTransactionId = null;
-
-        if (financialTransactionWithCorrelation.CorrelatedTransaction != null)
+        return new Entities.FinancialAccount
         {
-            associatedTransactionId = financialTransactionWithCorrelation.CorrelatedTransaction.Id;
-            associatedTransaction = ToModel(financialTransactionWithCorrelation.CorrelatedTransaction);
-        }
-
-        var financialTransaction = ToModel(financialTransactionWithCorrelation.Transaction);
-
-        financialTransaction.AssociatedTransactionId = associatedTransactionId;
-        financialTransaction.AssociatedTransaction = associatedTransaction;
-
-        return financialTransaction;
+            Id = entity.Id,
+            FriendlyId = entity.FriendlyId,
+            Name = entity.Name,
+            Description = entity.Description,
+            AccountType = entity switch
+            {
+                DepositAccount => Shared.FinancialAccountType.Deposit,
+                InstallmentAccount => Shared.FinancialAccountType.Installment,
+                RecurringExpenseAccount => Shared.FinancialAccountType.RecurringExpense,
+                RevolvingAccount => Shared.FinancialAccountType.Revolving,
+                _ => throw new ArgumentException($"Unknown financial account type: {entity.GetType().Name}", nameof(entity))
+            }
+        };
     }
 
-    public partial Entities.RecurringTransaction ToEntity(Models.RecurringTransaction model);
-    public partial Models.RecurringTransaction ToModel(Entities.RecurringTransaction entity);
+    public Entities.FinancialTransaction ToEntity(FinancialTransaction entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Entities.RecurringTransaction ToEntity(RecurringTransaction entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public FinancialAccount ToModel(Entities.FinancialAccount entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public FinancialTransaction ToModel(Entities.FinancialTransaction entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public FinancialTransaction ToModel(FinancialTransactionWithCorrelation financialTransactionWithCorrelation)
+    {
+        throw new NotImplementedException();
+    }
+
+    public RecurringTransaction ToModel(Entities.RecurringTransaction entity)
+    {
+        throw new NotImplementedException();
+    }
 }

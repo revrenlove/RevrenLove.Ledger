@@ -9,11 +9,13 @@ namespace RevrenLove.Ledger.Services;
 public interface IDataAccessor<TEntityModel> : IQueryable<TEntityModel> where TEntityModel : class, IEntity
 {
     Task<TEntityModel> CreateAsync(TEntityModel entity, bool saveChanges = true, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Guid id, bool saveChanges = true, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, bool saveChanges, CancellationToken cancellationToken = default);
     Task<TEntityModel> GetAsync(Guid id, CancellationToken cancellationToken);
     Task<TEntityModel> GetAsync(Guid id, Func<IQueryable<TEntityModel>, IQueryable<TEntityModel>> configureQuery, CancellationToken cancellationToken);
     Task<ICollection<TEntityModel>> GetAsync(Func<IQueryable<TEntityModel>, IQueryable<TEntityModel>> configureQuery, CancellationToken cancellationToken = default);
     Task<ICollection<TEntityModel>> GetAsync(Guid? cursor, int? pageSize, Func<IQueryable<TEntityModel>, IQueryable<TEntityModel>> configureQuery, CancellationToken cancellationToken = default);
+    Task<TEntityModel> UpdateAsync(TEntityModel entity, CancellationToken cancellationToken = default);
     Task<TEntityModel> UpdateAsync(TEntityModel entity, bool saveChanges = true, CancellationToken cancellationToken = default);
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
@@ -118,7 +120,7 @@ internal class DataAccessor<TEntityModel>(LedgerSQLiteDbContext dbContext) : IDa
         return entity;
     }
 
-    public async Task DeleteAsync(Guid id, bool saveChanges = true, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, bool saveChanges, CancellationToken cancellationToken = default)
     {
         var entity = await GetAsync(id, cancellationToken);
 
@@ -128,6 +130,14 @@ internal class DataAccessor<TEntityModel>(LedgerSQLiteDbContext dbContext) : IDa
         {
             await DbContext.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
+        await DeleteAsync(id, saveChanges: true, cancellationToken);
+
+    public async Task<TEntityModel> UpdateAsync(TEntityModel entity, CancellationToken cancellationToken = default)
+    {
+        return await UpdateAsync(entity, saveChanges: true, cancellationToken);
     }
 
     // TODO: JE - See if this is the best way to handle updates
