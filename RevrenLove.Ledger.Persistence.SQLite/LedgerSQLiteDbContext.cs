@@ -11,6 +11,11 @@ public class LedgerSQLiteDbContext(DbContextOptions<LedgerSQLiteDbContext> optio
     : IdentityDbContext<LedgerUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<FinancialAccount> FinancialAccounts { get; set; }
+    
+    public DbSet<RevolvingAccount> RevolvingAccounts { get; set; }
+    public DbSet<InstallmentAccount> InstallmentAccounts { get; set; }
+    public DbSet<RecurringExpenseAccount> RecurringExpenseAccounts { get; set; }
+
     public DbSet<FinancialTransaction> FinancialTransactions { get; set; }
     public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
     public DbSet<RunningBalance> RunningBalances { get; set; }

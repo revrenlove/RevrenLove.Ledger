@@ -15,10 +15,10 @@ public interface IFinancialAccountsService
     Task<decimal> GetPostedBalanceAsync(Guid financialAccountId, CancellationToken cancellationToken = default);
 }
 
-internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext, Mapper mapper)
+internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext, IMapper mapper)
     : LedgerServiceBase<FinancialAccount, Entities.FinancialAccount>(dbContext), IFinancialAccountsService
 {
-    private readonly Mapper _mapper = mapper;
+    private readonly IMapper _mapper = mapper;
 
     async Task<FinancialAccount> IFinancialAccountsService.GetAsync(Guid financialAccountId, CancellationToken cancellationToken) =>
         await GetAsync(financialAccountId, cancellationToken);

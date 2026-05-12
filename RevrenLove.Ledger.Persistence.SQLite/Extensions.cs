@@ -4,6 +4,7 @@ namespace RevrenLove.Ledger.Persistence.SQLite;
 
 public static class Extensions
 {
+    // TODO: JE - Rename this...
     public static IOrderedQueryable<FinancialTransaction> OrderByTruth(this IQueryable<FinancialTransaction> query) =>
         query
             .OrderBy(t => t.Date)

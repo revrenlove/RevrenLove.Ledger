@@ -5,11 +5,11 @@ namespace RevrenLove.Ledger.Services;
 
 public interface IRecurringTransactionService
 {
+    Task<RecurringTransaction> CreateAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<RecurringTransaction> GetAsync(Guid recurringTransactionId, CancellationToken cancellationToken = default);
     Task<IEnumerable<RecurringTransaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<RecurringTransaction> CreateAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken = default);
     Task<RecurringTransaction> UpdateAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
 internal class RecurringTransactionService(
@@ -34,7 +34,7 @@ internal class RecurringTransactionService(
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
         await
             _recurringTransactions
-                .DeleteAsync(id, cancellationToken: cancellationToken);
+                .DeleteAsync(id, cancellationToken);
 
     public async Task<RecurringTransaction> GetAsync(Guid recurringTransactionId, CancellationToken cancellationToken = default)
     {
@@ -65,6 +65,12 @@ internal class RecurringTransactionService(
 
     public async Task<RecurringTransaction> UpdateAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var entity = _mapper.ToEntity(recurringTransaction);
+
+        entity = await _recurringTransactions.UpdateAsync(entity, cancellationToken);
+
+        var model = _mapper.ToModel(entity);
+
+        return model;
     }
 }
