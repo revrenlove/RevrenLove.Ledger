@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Register Services
 
-var connectionString = builder.Configuration.GetConnectionString("Default")!;
+var connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString("Development")!
+    : builder.Configuration.GetConnectionString("Production")!;
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -32,16 +34,18 @@ builder.Services
     })
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddRevrenLedgerSQLiteDbContext(connectionString)
     .AddLedgerServices()
     .AddSingleton<Mapper>();
 
-// builder.Services
-//     .AddIdentityApiEndpoints<LedgerUser>()
-//     // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
-//     .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddRevrenLedgerSQLiteDbContext(connectionString);
+}
+else
+{
+    builder.Services.AddRevrenLedgerSqlServerDbContext(connectionString);
+}
 
-// Add identity and opt-in to endpoints
 builder.Services
     .AddIdentityCore<LedgerUser>()
     .AddRoles<IdentityRole<Guid>>()

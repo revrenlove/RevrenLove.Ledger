@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
+namespace RevrenLove.Ledger.Persistence.Configurations;
 
 public class FinancialTransactionConfiguration : IEntityTypeConfiguration<FinancialTransaction>
 {
@@ -17,9 +17,6 @@ public class FinancialTransactionConfiguration : IEntityTypeConfiguration<Financ
             .HasMaxLength(500);
 
         builder
-            .ToTable(t => t.HasCheckConstraint("CK_FinancialTransaction_Description_MinLength", "LENGTH(TRIM(Description)) >= 1"));
-
-        builder
             .HasOne(lt => lt.FinancialAccount)
             .WithMany(fa => fa.FinancialTransactions)
             .HasForeignKey(lt => lt.FinancialAccountId)
@@ -28,9 +25,5 @@ public class FinancialTransactionConfiguration : IEntityTypeConfiguration<Financ
         builder
             .Navigation(lt => lt.FinancialAccount)
             .IsRequired(false);
-
-        //builder
-        //    .Property(lt => lt.ComputedDisplayValue)
-        //    .HasComputedColumnSql("strftime('%Y-%m-%d', Date) || '|' || Amount || '|' || Id", stored: true);
     }
 }

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
   </ItemGroup>
@@ -16,10 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\RevrenLove.Ledger.Entities\RevrenLove.Ledger.Entities.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Persistence\RevrenLove.Ledger.Persistence.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\Sqlite\" />
   </ItemGroup>
 
 </Project>

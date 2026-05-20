@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0eaf331c-fd7b-4b45-9a1f-9dfa59e592cf</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Models\RevrenLove.Ledger.Api.Models.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Api.Client\RevrenLove.Ledger.Api.Client.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SQLite\RevrenLove.Ledger.Persistence.SQLite.csproj" />
+    <ProjectReference Include="..\RevrenLove.Ledger.Persistence.SqlServer\RevrenLove.Ledger.Persistence.SqlServer.csproj" />
     <ProjectReference Include="..\RevrenLove.Ledger.Services\RevrenLove.Ledger.Services.csproj" />
   </ItemGroup>
 

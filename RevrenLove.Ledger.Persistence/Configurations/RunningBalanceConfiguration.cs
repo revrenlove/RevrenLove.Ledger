@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
+namespace RevrenLove.Ledger.Persistence.Configurations;
 
 public class RunningBalanceConfiguration : IEntityTypeConfiguration<RunningBalance>
 {
