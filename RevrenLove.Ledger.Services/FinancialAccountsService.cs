@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RevrenLove.Ledger.Persistence.SQLite;
+using RevrenLove.Ledger.Persistence;
 using RevrenLove.Ledger.Services.Models;
 using RevrenLove.Ledger.Shared;
 
@@ -15,7 +15,7 @@ public interface IFinancialAccountsService
     Task<decimal> GetPostedBalanceAsync(Guid financialAccountId, CancellationToken cancellationToken = default);
 }
 
-internal class FinancialAccountsService(LedgerSQLiteDbContext dbContext, Mapper mapper)
+internal class FinancialAccountsService(LedgerDbContext dbContext, Mapper mapper)
     : LedgerServiceBase<FinancialAccount, Entities.FinancialAccount>(dbContext), IFinancialAccountsService
 {
     private readonly Mapper _mapper = mapper;

@@ -16,12 +16,12 @@ public class RecurringTransactionConfiguration : IEntityTypeConfiguration<Recurr
             .HasOne(rt => rt.FinancialAccount)
             .WithMany(fa => fa.RecurringOutgoingTransactionsTransactions)
             .HasForeignKey(rt => rt.FinancialAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasOne(rt => rt.DestinationFinancialAccount)
             .WithMany(fa => fa.RecurringIncomingTransactionsTransactions)
             .HasForeignKey(rt => rt.DestinationFinancialAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RevrenLove.Ledger.Persistence;
 using RevrenLove.Ledger.Persistence.SQLite;
 
 #pragma warning disable IDE0130
@@ -18,7 +19,8 @@ public static class DiExtensions
                 {
                     options.MigrationsAssembly(typeof(LedgerSQLiteDbContext).Assembly.FullName);
                 });
-            });
+            })
+            .AddScoped<LedgerDbContext>(provider => provider.GetRequiredService<LedgerSQLiteDbContext>());
 
         return services;
     }

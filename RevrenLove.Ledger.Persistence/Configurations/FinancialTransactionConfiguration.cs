@@ -20,7 +20,8 @@ public class FinancialTransactionConfiguration : IEntityTypeConfiguration<Financ
             .HasOne(lt => lt.FinancialAccount)
             .WithMany(fa => fa.FinancialTransactions)
             .HasForeignKey(lt => lt.FinancialAccountId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .Navigation(lt => lt.FinancialAccount)

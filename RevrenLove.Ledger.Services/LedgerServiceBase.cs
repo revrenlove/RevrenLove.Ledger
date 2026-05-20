@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
-using RevrenLove.Ledger.Persistence.SQLite;
+using RevrenLove.Ledger.Persistence;
 
 namespace RevrenLove.Ledger.Services;
 
-internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerSQLiteDbContext dbContext)
+internal abstract class LedgerServiceBase<TServiceModel, TEntityModel>(LedgerDbContext dbContext)
     where TServiceModel : class
     where TEntityModel : class, IEntity
 {
-    protected readonly LedgerSQLiteDbContext DbContext = dbContext;
+    protected readonly LedgerDbContext DbContext = dbContext;
 
     protected async Task<TServiceModel> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {

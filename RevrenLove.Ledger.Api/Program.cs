@@ -3,14 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using RevrenLove.Ledger.Api;
 using RevrenLove.Ledger.Entities;
 using RevrenLove.Ledger.Persistence.SQLite;
+using RevrenLove.Ledger.Persistence.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Register Services
 
-var connectionString = builder.Environment.IsDevelopment()
-    ? builder.Configuration.GetConnectionString("Development")!
-    : builder.Configuration.GetConnectionString("Production")!;
+string? connectionString = builder.Configuration.GetConnectionString("Production");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'Production' not found in configuration or user secrets.");
+}
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -33,25 +37,23 @@ builder.Services
                     .AllowAnyMethod());
     })
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
-    .AddLedgerServices()
-    .AddSingleton<Mapper>();
+    .AddSwaggerGen();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddRevrenLedgerSQLiteDbContext(connectionString);
-}
-else
-{
-    builder.Services.AddRevrenLedgerSqlServerDbContext(connectionString);
-}
+// Register DbContext first, before services that depend on it
+builder.Services.AddRevrenLedgerSqlServerDbContext(connectionString);
 
 builder.Services
     .AddIdentityCore<LedgerUser>()
     .AddRoles<IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<LedgerSQLiteDbContext>()
+    .AddEntityFrameworkStores<LedgerSqlServerDbContext>()
     .AddApiEndpoints();
 
+// Now register services that depend on the DbContext
+builder.Services
+    .AddLedgerServices()
+    .AddSingleton<Mapper>();
+
+Console.WriteLine(connectionString);
 
 builder.Services.AddControllers();
 

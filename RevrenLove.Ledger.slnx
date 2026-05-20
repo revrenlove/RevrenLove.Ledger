@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/scripts/">
+    <File Path="add-sql-server-migration.sh" />
     <File Path="scripts/add-migration.sh" />
     <File Path="scripts/commit.sh" />
   </Folder>

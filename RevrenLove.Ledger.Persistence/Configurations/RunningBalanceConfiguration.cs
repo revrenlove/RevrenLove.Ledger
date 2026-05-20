@@ -16,7 +16,8 @@ public class RunningBalanceConfiguration : IEntityTypeConfiguration<RunningBalan
             .HasOne(rb => rb.FinancialTransaction)
             .WithOne(ft => ft.RunningBalance)
             .HasForeignKey<RunningBalance>(rb => rb.FinancialTransactionId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasIndex(rb => rb.FinancialTransactionId)
