@@ -3,12 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using RevrenLove.Ledger.Api;
 using RevrenLove.Ledger.Entities;
 using RevrenLove.Ledger.Persistence.SQLite;
+using RevrenLove.Ledger.Persistence.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Register Services
 
-var connectionString = builder.Configuration.GetConnectionString("Default")!;
+string? connectionString = builder.Configuration.GetConnectionString("Production");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'Production' not found in configuration or user secrets.");
+}
 
 builder.Services
     .AddAuthentication(IdentityConstants.ApplicationScheme)
@@ -31,23 +37,23 @@ builder.Services
                     .AllowAnyMethod());
     })
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
-    .AddRevrenLedgerSQLiteDbContext(connectionString)
-    .AddLedgerServices()
-    .AddSingleton<Mapper>();
+    .AddSwaggerGen();
 
-// builder.Services
-//     .AddIdentityApiEndpoints<LedgerUser>()
-//     // TODO: JE - Figure out how to make this agnostic for when we switch db's per env
-//     .AddEntityFrameworkStores<LedgerSQLiteDbContext>();
+// Register DbContext first, before services that depend on it
+builder.Services.AddRevrenLedgerSqlServerDbContext(connectionString);
 
-// Add identity and opt-in to endpoints
 builder.Services
     .AddIdentityCore<LedgerUser>()
     .AddRoles<IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<LedgerSQLiteDbContext>()
+    .AddEntityFrameworkStores<LedgerSqlServerDbContext>()
     .AddApiEndpoints();
 
+// Now register services that depend on the DbContext
+builder.Services
+    .AddLedgerServices()
+    .AddSingleton<Mapper>();
+
+Console.WriteLine(connectionString);
 
 builder.Services.AddControllers();
 

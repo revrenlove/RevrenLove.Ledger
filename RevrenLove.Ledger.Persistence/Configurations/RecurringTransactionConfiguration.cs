@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RevrenLove.Ledger.Entities;
 
-namespace RevrenLove.Ledger.Persistence.SQLite.Configurations;
+namespace RevrenLove.Ledger.Persistence.Configurations;
 
 public class RecurringTransactionConfiguration : IEntityTypeConfiguration<RecurringTransaction>
 {
@@ -16,12 +16,12 @@ public class RecurringTransactionConfiguration : IEntityTypeConfiguration<Recurr
             .HasOne(rt => rt.FinancialAccount)
             .WithMany(fa => fa.RecurringOutgoingTransactionsTransactions)
             .HasForeignKey(rt => rt.FinancialAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasOne(rt => rt.DestinationFinancialAccount)
             .WithMany(fa => fa.RecurringIncomingTransactionsTransactions)
             .HasForeignKey(rt => rt.DestinationFinancialAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

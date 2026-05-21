@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RevrenLove.Ledger.Persistence.SQLite;
 using RevrenLove.Ledger.Services.Models;
 using RevrenLove.Ledger.Shared;
 
@@ -119,7 +118,7 @@ internal class FinancialTransactionService(
                 .Include(t => t.FinancialAccount)
                 .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccount!.UserId == userId)
-                .OrderByTruth()
+                .ApplyDefaultOrdering()
                 .Reverse();
 
         var results = await GetQueryWithCorrelation(query).ToListAsync(cancellationToken);
@@ -136,7 +135,7 @@ internal class FinancialTransactionService(
                 .Include(t => t.FinancialAccount)
                 .Include(t => t.RunningBalance)
                 .Where(t => t.FinancialAccountId == financialAccountId)
-                .OrderByTruth()
+                .ApplyDefaultOrdering()
                 .Reverse();
 
         // TODO: JE - Look into projection in Mapperly

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RevrenLove.Ledger.Entities;
-using RevrenLove.Ledger.Persistence.SQLite;
+using RevrenLove.Ledger.Persistence;
 using System.Collections;
 using System.Linq.Expressions;
 
@@ -19,11 +19,11 @@ public interface IDataAccessor<TEntityModel> : IQueryable<TEntityModel> where TE
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
-internal class DataAccessor<TEntityModel>(LedgerSQLiteDbContext dbContext) : IDataAccessor<TEntityModel> where TEntityModel : class, IEntity
+internal class DataAccessor<TEntityModel>(LedgerDbContext dbContext) : IDataAccessor<TEntityModel> where TEntityModel : class, IEntity
 {
     private IQueryable<TEntityModel> Query => DbContext.Set<TEntityModel>();
 
-    private LedgerSQLiteDbContext DbContext => dbContext;
+    private LedgerDbContext DbContext => dbContext;
 
     public Type ElementType => Query.ElementType;
 
