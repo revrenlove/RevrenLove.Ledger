@@ -13,6 +13,6 @@ public record FinancialTransaction
     public required FinancialTransactionStatus Status { get; set; }
     public decimal? RunningBalance { get; set; }
 
-    public FinancialAccount? FinancialAccount { get; set; }
+    public IFinancialAccount? FinancialAccount { get; set; }
     public FinancialTransaction? AssociatedTransaction { get; set; }
 }

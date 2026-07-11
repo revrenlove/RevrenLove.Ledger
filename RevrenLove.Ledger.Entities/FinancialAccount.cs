@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using RevrenLove.Ledger.Shared;
 
 namespace RevrenLove.Ledger.Entities;
 
@@ -11,11 +12,7 @@ public class FinancialAccount : IEntity
     public required string FriendlyId { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
-
-    /// <summary>
-    /// True if this account should be exempt from balance calculations (e.g., utilities, payroll, etc).
-    /// </summary>
-    public bool IsBalanceExempt { get; set; } = false;
+    public FinancialAccountType AccountType { get; set; }
 
     public LedgerUser? User { get; set; }
 

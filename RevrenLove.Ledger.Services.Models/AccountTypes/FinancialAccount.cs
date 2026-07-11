@@ -1,0 +1,3 @@
+﻿namespace RevrenLove.Ledger.Services.Models.AccountTypes;
+
+public union FinancialAccount(DepositAccount,IncomeSourceAccount,InstallmentAccount,RecurringExpenseAccount,RevolvingAccount);
